@@ -1,0 +1,16 @@
+Package: nhanesGH
+Title: NHANES 2011-2014
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Caroline",
+           family = "Smith",
+           role = c("aut", "cre"),
+           email = "caroline.smith@wsu.edu",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: NHANES 2011-2014 data with depression, grip strength, and many other variables.
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 2.10)
