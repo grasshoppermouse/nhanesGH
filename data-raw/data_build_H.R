@@ -694,6 +694,15 @@ paq <- read.xport('data-raw/NHANES data/PAQ_H.XPT')
 
 inq <- read.xport('data-raw/NHANES data/INQ_H.XPT')
 
+
+# Sexual Behavior ---------------------------------------------------------
+
+sxq <- read.xport('data-raw/NHANES data/SXQ_H.XPT')
+sxq[sxq==77777 | sxq==99999] = NA
+sxq$SXD031[sxq$SXD031==77 | sxq$SXD031==99] = NA #age at first sex
+
+sxq$SXQ648[sxq$SXQ648==7 | sxq$SXQ648==9] = NA #new partner past 12 months
+
 # Create dataframe --------------------------------------------------------
 
 
@@ -801,7 +810,8 @@ d = dem %>%
   mutate(
     savings5000 = ifelse(savings5000 >= 7, NA, savings5000),
     savings5000 = ifelse(savings5000 == 1, 1, 0)
-  )
+  ) %>%
+  left_join(sxq)
 
 d$chronic_disease_score <-
   (d$heart_disease == 1) +

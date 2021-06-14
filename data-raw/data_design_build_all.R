@@ -14,4 +14,4 @@ designsG <- all_designs(d_G)
 designsH <- all_designs(d_H)
 designsGH <- all_designs(d_GH)
 
-usethis::use_data(d_GH, designsGH, overwrite = TRUE)
+usethis::use_data(d_G, d_H, d_GH, designsG, designsH, designsGH, overwrite = TRUE)
