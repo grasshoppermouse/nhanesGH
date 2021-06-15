@@ -657,11 +657,194 @@ inq <- read.xport('data-raw/NHANES data/INQ_G.XPT')
 
 # Sexual Behavior ---------------------------------------------------------
 
+# In general, if a person wasn't asked a question, the response to the question is shown as “missing.”
+# It is up to the analysts to recode the response to zero as they see fit. For example, if a respondent
+# reported that they had zero lifetime vaginal sex partners, they wouldn't be asked the number of vaginal
+# sex partners in the past 12 months. Since the respondent does not receive the question about partners
+# in the past 12 months, the data will be coded as missing for this variable. Analysts may want to recode
+# this to “0.”
+
+# For questions that ascertain total number of partners for all types of sex
+# (i.e., SXD171, SXD510, SXD101 and SXD450), if the respondent had reported never having any type of sex,
+# the responses were coded as “0.”
+
+
 sxq <- read.xport('data-raw/NHANES data/SXQ_G.XPT')
 sxq[sxq==77777 | sxq==99999] = NA
-sxq$SXD031[sxq$SXD031==77 | sxq$SXD031==99] = NA #age at first sex
 
-sxq$SXQ648[sxq$SXQ648==7 | sxq$SXQ648==9] = NA #new partner past 12 months
+# SXD021 - Ever had vaginal, anal, or oral sex
+sxq$SXD021[sxq$SXD021==7 | sxq$SXD021==9] = NA
+# SXQ800 - Ever had vaginal sex with a woman
+sxq$SXQ800[sxq$SXQ800==7 | sxq$SXQ800==9] = NA
+# SXQ803 - Ever performed oral sex on a woman
+sxq$SXQ803[sxq$SXQ803==7 | sxq$SXQ803==9] = NA
+# SXQ806 - Ever had anal sex with a woman
+sxq$SXQ806[sxq$SXQ806==7 | sxq$SXQ806==9] = NA
+# SXQ809 - Ever had any sex with a man: anal, oral
+sxq$SXQ809[sxq$SXQ809==7 | sxq$SXQ809==9] = NA
+# SXD862 - CHECK ITEM
+# SXQ700 - Ever had vaginal sex with a man
+sxq$SXQ700[sxq$SXQ700==7 | sxq$SXQ700==9] = NA
+# SXQ703 - Ever performed oral sex on a man
+sxq$SXQ703[sxq$SXQ703==7 | sxq$SXQ703==9] = NA
+# SXQ706 - Ever had anal sex with a man
+sxq$SXQ706[sxq$SXQ706==7 | sxq$SXQ706==9] = NA
+# SXQ709 - Ever had any kind of sex with a woman
+sxq$SXQ709[sxq$SXQ709==7 | sxq$SXQ709==9] = NA
+# SXQ762 - CHECK ITEM
+
+# SXD031 - How old when first had sex
+sxq$SXD031[sxq$SXD031==77 | sxq$SXD031==99] = NA
+# SXD801 - CHECK ITEM
+
+# SXD171 - # female sex partners/lifetime
+# SXD815 - CHECK ITEM
+# SXD510 - # female sex partners/year
+# SXQ821 - CHECK ITEM
+# SXQ824 - # female vaginal sex partners/lifetime
+# SXQ827 - # female vaginal sex partners/year
+# SXQ830 - CHECK ITEM
+# SXD633 - Age first performed oral sex on a woman
+sxq$SXD633[sxq$SXD633==77 | sxq$SXD633==99] = NA
+
+# SXQ636 - # female performed oral sex/lifetime
+# SXQ639 - # female performed oral sex/year
+# SXQ868 - CHECK ITEM
+# SXD642 - Performed oral sex new female (days)
+# SXQ833 - CHECK ITEM
+# SXQ410 - # men anal/oral sex partners/lifetime
+# SXQ875 - CHECK ITEM
+# SXQ550 - # men anal/oral sex partners/year
+# SXQ836 - # men anal sex partners/lifetime
+# SXQ839 - CHECK ITEM
+# SXQ841 - # men anal sex partners/year
+# SXQ853 - Ever performed oral sex on a man
+sxq$SXQ853[sxq$SXQ853==7 | sxq$SXQ853==9] = NA
+
+# SXD847 - CHECK ITEM
+# SXD621 - How old when first had oral sex
+sxq$SXD621[sxq$SXD621==77 | sxq$SXD621==99] = NA
+
+# SXQ624 - # male oral sex partners/lifetime
+# SXQ850 - CHECK ITEM
+# SXQ627 - # male oral sex partners/year
+# SXQ765 - CHECK ITEM
+# SXQ865 - CHECK ITEM
+# SXD630 - Last performed oral sex new male (days)
+# SXD844 - CHECK ITEM
+# SXD744 - CHECK ITEM
+# SXQ845 - CHECK ITEM
+# SXQ645 - Use protection when performing oral sex
+sxq$SXQ645[sxq$SXQ645==7 | sxq$SXQ645==9] = NA
+# SXD871 - CHECK ITEM
+# SXQ648 - Had sex with new partner/year
+sxq$SXQ648[sxq$SXQ648==7 | sxq$SXQ648==9] = NA
+# SXQ859 - CHECK ITEM
+# SXQ610 - # times had vaginal or anal sex/year
+sxq$SXQ610[sxq$SXQ610==77 | sxq$SXQ610==99] = NA
+
+# SXD245 - CHECK ITEM
+# SXQ251 - # times had sex without condom/year
+sxq$SXQ251[sxq$SXQ251==7 | sxq$SXQ251==9] = NA
+
+# SXD856 - CHECK ITEM
+# SXQ590 - # sex partners five years older/year
+# SXQ600 - # sex partners five years younger/year
+# SXD001 - CHECK ITEM
+# SXD002 - CHECK ITEM
+# SXD101 - # male sex partners/lifetime
+# SXD715 - CHECK ITEM
+# SXD450 - # male sex partners/year
+# SXQ721 - CHECK ITEM
+# SXQ724 - # male vaginal sex partners/lifetime
+# SXQ727 - # male vaginal sex partners/year
+# SXQ730 - CHECK ITEM
+# SXD733 - CHECK ITEM
+# SXQ130 - # female sex partners/lifetime
+# SXQ490 - # female sex partners/year
+# SXQ741 - Ever performed oral sex on a woman
+sxq$SXQ741[sxq$SXQ741==7 | sxq$SXQ741==9] = NA
+
+# SXQ768 - CHECK ITEM
+# SXQ747 - CHECK ITEM
+# SXD771 - CHECK ITEM
+# SXQ759 - CHECK ITEM
+# SXD750 - CHECK ITEM
+# SXQ753 - Ever told by doctor, you had HPV
+sxq$SXQ753[sxq$SXQ753==7 | sxq$SXQ753==9] = NA
+# SXQ260 - Doctor ever told you had genital herpes
+sxq$SXQ260[sxq$SXQ260==7 | sxq$SXQ260==9] = NA
+# SXQ265 - Doctor ever told you had genital warts
+sxq$SXQ265[sxq$SXQ265==7 | sxq$SXQ265==9] = NA
+
+## SXQ267 - Age when told you had genital warts
+#sxq$SXQ803[sxq$SXQ803==7 | sxq$SXQ803==9] = NA
+
+# SXQ270 - Doctor ever told you had gonorrhea
+sxq$SXQ270[sxq$SXQ270==7 | sxq$SXQ270==9] = NA
+# SXQ272 - Doctor ever told you had chlamydia
+sxq$SXQ272[sxq$SXQ272==7 | sxq$SXQ272==9] = NA
+# SXQ280 - Are you circumcised or uncircumcised
+sxq$SXQ280[sxq$SXQ280==7 | sxq$SXQ280==9] = NA
+
+# SXQ292 - Describe sexual orientation (male)
+sxq$SXQ292[sxq$SXQ292==7 | sxq$SXQ292==9] = NA
+# SXQ756 - CHECK ITEM
+# SXQ294 - Describe sexual orientation (female)
+sxq$SXQ294[sxq$SXQ294==7 | sxq$SXQ294==9] = NA
+
+# Ever had vaginal, anal, or oral sex
+sxq$ever_sex <- sxq$SXD021
+
+# How old were you when you had sex for the first time?
+sxq$age_first_sex <- sxq$SXD031
+
+# In your lifetime, with how many [men/women] have you had any kind of sex?
+#If never had sex, coded as zero
+sxq$sex_partners <- ifelse(is.na(sxq$SXD171), sxq$SXD101, sxq$SXD171)
+
+# In your lifetime, with how many [men/women] have you had vaginal sex? (ages 18-59)
+sxq$vaginal_sex_partners <- ifelse(is.na(sxq$SXQ824), sxq$SXQ724, sxq$SXQ824)
+
+#In the past 12 months, with how many [men/women] have you had any kind of sex? (ages 18-59)
+#if never had sex, coded as zero
+sxq$sex_partners_year <- ifelse(is.na(sxq$SXD510), sxq$SXD450, sxq$SXD510)
+
+# In the past 12 months, with how many [men/women] have you had vaginal sex? (ages 18-59)
+sxq$vaginal_sex_partners_year <- ifelse(is.na(sxq$SXQ827), sxq$SXQ727, sxq$SXQ827)
+
+#If never had sex, set number of vaginal sex partners to zero
+sxq$vaginal_sex_partners <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners)
+
+#If never had sex, set number of vaginal sex partners in past year to zero
+sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners_year)
+
+#Do you think of yourself as...
+# 1	Heterosexual or straight
+# 2	Homosexual or gay
+# 3	Bisexual (attracted to men and women)	25	1752
+# 4	Something else
+# 5	Not sure
+sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
+sxq$heterosexual <- ifelse(sxq$sexual_orientation==1, TRUE, FALSE)
+
+# In the past 12 months, did you have any kind of sex with a person that you never had sex with before?
+sxq$new_partner <- sxq$SXQ648
+sxq$new_partner <- ifelse(sxq$ever_sex==2, 2, sxq$new_partner)
+
+# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years older than you?
+sxq$older_partners<- sxq$SXQ590
+sxq$older_partners <- ifelse(sxq$ever_sex==2, 0, sxq$older_partners)
+
+# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years younger than you?
+sxq$younger_partners <- sxq$SXQ600
+sxq$younger_partners <- ifelse(sxq$ever_sex==2, 0, sxq$younger_partners)
+
+# Analysts should be aware that the 2011-2012 sexual behavior data has some inconsistencies in terms of
+# number of partners reported for each type of sex. For example, about 7% of males and 4% of females
+# reported a greater number of vaginal sex partners in the past 12 months compared with number of “total”
+# sex partners in the past 12 months.
+
 
 # Create dataframe --------------------------------------------------------
 
