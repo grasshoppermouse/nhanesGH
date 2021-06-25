@@ -309,39 +309,90 @@ bmx = read.xport('data-raw/NHANES data/BMX_G.XPT')
 
 
 # MGX Grip strength data
+msx = read.xport('data-raw/NHANES data/MGX_G.XPT')
 
 # SEQN - Respondent sequence number
 # MGDEXSTS - Grip test status
+msx$gripteststatus <- mgx$MGDEXSTS
+
 # MGD050 - Ever had surgery on hands or wrists
+msx$everhandsurgery <- msx$MGD050
+
 # MGD060 - Which hand or wrist had surgery
+msx$whichhandsurgery <- msx$MGD060
+
 # MGQ070 - Recent pain/aching/stiffness-right hand
+msx$painrighthand <- msx$MGQ070
+
 # MGQ080 - Cause of recent pain in right hand
+msx$causerighthandpain <- msx$MGQ080
+
 # MGQ090 - Pain in right hand gotten worse recently
+msx$painrighthandworse <- msx$MGQ090
+
 # MGQ100 - Recent pain/aching/stiffness-left hand
+msx$painlefthand <- msx$MGQ100
+
 # MGQ110 - Cause of recent pain in left hand
+msx$causelefthandpain <- msx$MGQ110
+
 # MGQ120 - Pain in left hand gotten worse recently
+msx$painlefthandworse <- msx$MGQ120
+
 # MGD130 - Dominant hand
+msx$dominanthand <- msx$MGD130
+
 # MGQ90DG - 90 degree angle with index finger
+msx$indexfingerangle <- msx$MGQ90DG
+
 # MGDSEAT - Testing position
+msx$testingposition <- msx$MGDSEAT
+
 # MGAPHAND - Hand assigned for practice trial
+msx$practicehand <- msx$MGAPHAND
+
 # MGATHAND - Begin the test with this hand.
+msx$beginhand <- msx$MGATHAND
+
 # MGXH1T1 - Grip strength (kg), hand 1, test 1
+msx$hand1test1 <- msx$MGXH1T1
+
 # MGXH1T1E - Grip strength, hand 1, test 1 effort
+msx$hand1test1effort <- msx$MGXH1T1E
+
 # MGXH2T1 - Grip strength (kg), hand 2, test 1
+msx$hand2test1 <- msx$MGXH2T1
+
 # MGXH2T1E - Grip strength, hand 2, test 1 effort
+msx$hand2test1effort <- msx$MGXH2T1E
+
 # MGXH1T2 - Grip strength (kg), hand 1, test 2
+msx$hand1test2 <- msx$MGXH1T2
+
 # MGXH1T2E - Grip strength, hand 1, test 2 effort
+msx$hand1test2effort <- msx$MGXH1T2E
+
 # MGXH2T2 - Grip strength (kg), hand 2, test 2
+msx$hand2test2 <- msx$MGXH2T2
+
 # MGXH2T2E - Grip strength, hand 2, test 2 effort
+msx$hand2test2effort <- msx$MGXH2T2E
+
 # MGXH1T3 - Grip strength (kg), hand 1, test 3
+msx$hand1test3 <- msx$MGXH1T3
+
 # MGXH1T3E - Grip strength, hand 1, test 3 effort
+msx$hand1test3effort <- msx$MGXH1T3E
+
 # MGXH2T3 - Grip strength (kg), hand 2, test 3
+msx$hand2test3 <- msx$MGXH2T3
+
 # MGXH2T3E - Grip strength, hand 2, test 3 effort
+msx$hand2test3effort <- msx$MGXH2T3E
+
 # MGDCGSZ - Combined grip strength (kg)
 
 
-
-msx = read.xport('data-raw/NHANES data/MGX_G.XPT')
 
 # Fasting -----------------------------------------------------------------
 
@@ -672,132 +723,216 @@ inq <- read.xport('data-raw/NHANES data/INQ_G.XPT')
 sxq <- read.xport('data-raw/NHANES data/SXQ_G.XPT')
 sxq[sxq==77777 | sxq==99999] = NA
 
-# SXD021 - Ever had vaginal, anal, or oral sex
+# SXD021 - Ever had vaginal, anal, or oral sex (Males and Females 18-69)
 sxq$SXD021[sxq$SXD021==7 | sxq$SXD021==9] = NA
-# SXQ800 - Ever had vaginal sex with a woman
+sxq$ever_sex <- sxq$SXD021
+
+# SXQ800 - Ever had vaginal sex with a woman (Males 18-69)
 sxq$SXQ800[sxq$SXQ800==7 | sxq$SXQ800==9] = NA
-# SXQ803 - Ever performed oral sex on a woman
+sxq$men_evervaginalsexwithwoman <- sxq$SXQ800
+
+# SXQ803 - Ever performed oral sex on a woman (Males 18-69)
 sxq$SXQ803[sxq$SXQ803==7 | sxq$SXQ803==9] = NA
-# SXQ806 - Ever had anal sex with a woman
+sxq$men_everoralsexonwoman <- sxq$SXQ803
+
+# SXQ806 - Ever had anal sex with a woman (Males 18-69)
 sxq$SXQ806[sxq$SXQ806==7 | sxq$SXQ806==9] = NA
-# SXQ809 - Ever had any sex with a man: anal, oral
+sxq$men_everanalsexwithwoman <- sxq$SXQ806
+
+# SXQ809 - Ever had any sex with a man: anal, oral (Males 18-69)
 sxq$SXQ809[sxq$SXQ809==7 | sxq$SXQ809==9] = NA
+sxq$men_eversexwithman <- sxq$SXQ809
+
 # SXD862 - CHECK ITEM
-# SXQ700 - Ever had vaginal sex with a man
+# SXQ700 - Ever had vaginal sex with a man (Females 18-69)
 sxq$SXQ700[sxq$SXQ700==7 | sxq$SXQ700==9] = NA
-# SXQ703 - Ever performed oral sex on a man
+sxq$wom_evervaginalsexwithman <- sxq$sxq$SXQ700
+
+# SXQ703 - Ever performed oral sex on a man (Females 18-69)
 sxq$SXQ703[sxq$SXQ703==7 | sxq$SXQ703==9] = NA
-# SXQ706 - Ever had anal sex with a man
+sxq$wom_everoralsexonman <- sxq$SXQ703
+
+# SXQ706 - Ever had anal sex with a man  (Females 18-69)
 sxq$SXQ706[sxq$SXQ706==7 | sxq$SXQ706==9] = NA
-# SXQ709 - Ever had any kind of sex with a woman
+sxq$wom_everanalsexwithman <- sxq$SXQ706
+
+# SXQ709 - Ever had any kind of sex with a woman  (Females 18-69)
 sxq$SXQ709[sxq$SXQ709==7 | sxq$SXQ709==9] = NA
+sxq$wom_eversexwithwoman <- sxq$SXQ709
+
 # SXQ762 - CHECK ITEM
 
-# SXD031 - How old when first had sex
+# SXD031 - How old when first had sex (Males and Females 18-69)
 sxq$SXD031[sxq$SXD031==77 | sxq$SXD031==99] = NA
+# How old were you when you had sex for the first time?
+sxq$age_first_sex <- sxq$SXD031
+
+
 # SXD801 - CHECK ITEM
 
-# SXD171 - # female sex partners/lifetime
+# SXD171 - # female sex partners/lifetime (Males 18-69)
 # SXD815 - CHECK ITEM
-# SXD510 - # female sex partners/year
+# SXD510 - # female sex partners/year (Males 18-59)
 # SXQ821 - CHECK ITEM
-# SXQ824 - # female vaginal sex partners/lifetime
-# SXQ827 - # female vaginal sex partners/year
-# SXQ830 - CHECK ITEM
-# SXD633 - Age first performed oral sex on a woman
-sxq$SXD633[sxq$SXD633==77 | sxq$SXD633==99] = NA
+# SXQ824 - # female vaginal sex partners/lifetime (Males 18-59)
+# SXQ827 - # female vaginal sex partners/year (Males 18-59)
 
-# SXQ636 - # female performed oral sex/lifetime
-# SXQ639 - # female performed oral sex/year
+# SXQ830 - CHECK ITEM
+# SXD633 - Age first performed oral sex on a woman (Males and Females 18-59)
+sxq$SXD633[sxq$SXD633==77 | sxq$SXD633==99] = NA
+sxq$ageoralsexonwoman <- sxq$SXD633
+
+# SXQ636 - # female performed oral sex/lifetime (Males and Females 18-59)
+sxq$numfemaleoralsex <- sxq$SXQ636
+
+# SXQ639 - # female performed oral sex/year (Males and Females 18-59)
+sxq$numfemaleoralsexyear <- sxq$SXQ639
+
 # SXQ868 - CHECK ITEM
-# SXD642 - Performed oral sex new female (days)
+# SXD642 - Performed oral sex new female (days) (Males and Females 18-59)
+# How long has it been since the last time you performed oral sex on a new female partner?
+# A new sexual partner is someone that you had never had sex with before.
+sxq$daysoralsexnewfemalepartner <- sxq$SXD642
+
 # SXQ833 - CHECK ITEM
-# SXQ410 - # men anal/oral sex partners/lifetime
+# SXQ410 - # men anal/oral sex partners/lifetime (Males 18-69)
+#In your lifetime, with how many men have you had anal or oral sex?
+sxq$men_malesexpartnerslifetime <- sxq$SXQ410
+
 # SXQ875 - CHECK ITEM
-# SXQ550 - # men anal/oral sex partners/year
-# SXQ836 - # men anal sex partners/lifetime
+# SXQ550 - # men anal/oral sex partners/year (Males 18-59)
+sxq$men_malesexpartnersyear <- sxq$SXQ550
+
+# SXQ836 - # men anal sex partners/lifetime (Males 18-69)
+sxq$men_maleanalsexpartnerslifetime <- sxq$SXQ836
+
 # SXQ839 - CHECK ITEM
-# SXQ841 - # men anal sex partners/year
-# SXQ853 - Ever performed oral sex on a man
+# SXQ841 - # men anal sex partners/year (Males 18-59)
+sxq$men_maleanalsexpartnersyear <- sxq$SXQ841
+
+# SXQ853 - Ever performed oral sex on a man (Males 18-69)
 sxq$SXQ853[sxq$SXQ853==7 | sxq$SXQ853==9] = NA
+sxq$men_everoralsexonman <- sxq$SXQ853
 
 # SXD847 - CHECK ITEM
-# SXD621 - How old when first had oral sex
+# SXD621 - How old when first had oral sex (Males and Females 18-69)
 sxq$SXD621[sxq$SXD621==77 | sxq$SXD621==99] = NA
+sxq$agefirstoralsex <- sxq$SXD621
 
-# SXQ624 - # male oral sex partners/lifetime
+# SXQ624 - # male oral sex partners/lifetime (Males and Females 18-69)
+sxq$nummaleoralsex <- sxq$SXQ624
+
 # SXQ850 - CHECK ITEM
-# SXQ627 - # male oral sex partners/year
+# SXQ627 - # male oral sex partners/year (Males and Females 18-59)
+sxq$nummaleoralsexyear <- sxq$SXQ627
+
 # SXQ765 - CHECK ITEM
 # SXQ865 - CHECK ITEM
-# SXD630 - Last performed oral sex new male (days)
+# SXD630 - Last performed oral sex new male (days) (Males and Females 18-59)
+sxq$daysoralsexnewmalepartner <- sxq$SXD630
+
 # SXD844 - CHECK ITEM
 # SXD744 - CHECK ITEM
 # SXQ845 - CHECK ITEM
-# SXQ645 - Use protection when performing oral sex
+# SXQ645 - Use protection when performing oral sex (Males and Females 18-59)
 sxq$SXQ645[sxq$SXQ645==7 | sxq$SXQ645==9] = NA
+sxq$oralsexprotection <- sxq$SXQ645
+
 # SXD871 - CHECK ITEM
-# SXQ648 - Had sex with new partner/year
+# SXQ648 - Had sex with new partner/year (Males and Females 18-59)
 sxq$SXQ648[sxq$SXQ648==7 | sxq$SXQ648==9] = NA
+# In the past 12 months, did you have any kind of sex with a person that you never had sex with before?
+sxq$new_partner <- sxq$SXQ648
+sxq$new_partner <- ifelse(sxq$ever_sex==2, 2, sxq$new_partner)
+
 # SXQ859 - CHECK ITEM
-# SXQ610 - # times had vaginal or anal sex/year
+# SXQ610 - # times had vaginal or anal sex/year (Males and Females 18-59)
+#In the past 12 months, about how many times have you had {vaginal or anal/vaginal/anal} sex?
 sxq$SXQ610[sxq$SXQ610==77 | sxq$SXQ610==99] = NA
+sxq$numsexpastyear <- sxq$SXQ610
 
 # SXD245 - CHECK ITEM
-# SXQ251 - # times had sex without condom/year
+# SXQ251 - # times had sex without condom/year (Males and Females 18-59)
 sxq$SXQ251[sxq$SXQ251==7 | sxq$SXQ251==9] = NA
+sxq$numsexnocondompastyear <- sxq$SXQ251
 
 # SXD856 - CHECK ITEM
-# SXQ590 - # sex partners five years older/year
-# SXQ600 - # sex partners five years younger/year
+# SXQ590 - # sex partners five years older/year (Males and Females 18-29)
+# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years older than you?
+sxq$older_partners<- sxq$SXQ590
+sxq$older_partners <- ifelse(sxq$ever_sex==2, 0, sxq$older_partners)
+
+# SXQ600 - # sex partners five years younger/year (Males and Females 18-29)
+# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years younger than you?
+sxq$younger_partners <- sxq$SXQ600
+sxq$younger_partners <- ifelse(sxq$ever_sex==2, 0, sxq$younger_partners)
+
 # SXD001 - CHECK ITEM
 # SXD002 - CHECK ITEM
-# SXD101 - # male sex partners/lifetime
+# SXD101 - # male sex partners/lifetime (Females 18-69)
 # SXD715 - CHECK ITEM
-# SXD450 - # male sex partners/year
+# SXD450 - # male sex partners/year (Females 18-59)
 # SXQ721 - CHECK ITEM
-# SXQ724 - # male vaginal sex partners/lifetime
-# SXQ727 - # male vaginal sex partners/year
+# SXQ724 - # male vaginal sex partners/lifetime (Females 18-59)
+# SXQ727 - # male vaginal sex partners/year (Females 18-59)
 # SXQ730 - CHECK ITEM
 # SXD733 - CHECK ITEM
-# SXQ130 - # female sex partners/lifetime
-# SXQ490 - # female sex partners/year
-# SXQ741 - Ever performed oral sex on a woman
+# SXQ130 - # female sex partners/lifetime (Females 18-59)
+sxq$wom_femalesexpartnerslifetime <- sxq$SXQ130
+
+# SXQ490 - # female sex partners/year (Females 18-59)
+sxq$wom_femalesexpartnersyear <- sxq$SXQ490
+
+# SXQ741 - Ever performed oral sex on a woman (Females 18-59)
 sxq$SXQ741[sxq$SXQ741==7 | sxq$SXQ741==9] = NA
+sxq$wom_everoralsexonwoman <- sxq$SXQ741
 
 # SXQ768 - CHECK ITEM
 # SXQ747 - CHECK ITEM
 # SXD771 - CHECK ITEM
 # SXQ759 - CHECK ITEM
 # SXD750 - CHECK ITEM
-# SXQ753 - Ever told by doctor, you had HPV
+# SXQ753 - Ever told by doctor, you had HPV (Females 18-59)
 sxq$SXQ753[sxq$SXQ753==7 | sxq$SXQ753==9] = NA
-# SXQ260 - Doctor ever told you had genital herpes
+sxq$wom_hpv <- sxq$SXQ753
+
+# SXQ260 - Doctor ever told you had genital herpes (Males and Females 18-59)
 sxq$SXQ260[sxq$SXQ260==7 | sxq$SXQ260==9] = NA
-# SXQ265 - Doctor ever told you had genital warts
+sxq$genitalherpes <- sxq$SXQ260
+
+# SXQ265 - Doctor ever told you had genital warts (Males and Females 18-59)
 sxq$SXQ265[sxq$SXQ265==7 | sxq$SXQ265==9] = NA
+sxq$genitalwarts <- sxq$SXQ265
 
 ## SXQ267 - Age when told you had genital warts
 #sxq$SXQ803[sxq$SXQ803==7 | sxq$SXQ803==9] = NA
 
-# SXQ270 - Doctor ever told you had gonorrhea
+# SXQ270 - Doctor ever told you had gonorrhea (Males and Females 18-59)
 sxq$SXQ270[sxq$SXQ270==7 | sxq$SXQ270==9] = NA
-# SXQ272 - Doctor ever told you had chlamydia
-sxq$SXQ272[sxq$SXQ272==7 | sxq$SXQ272==9] = NA
-# SXQ280 - Are you circumcised or uncircumcised
-sxq$SXQ280[sxq$SXQ280==7 | sxq$SXQ280==9] = NA
+sxq$gonorrhea <- sxq$SXQ270
 
-# SXQ292 - Describe sexual orientation (male)
+# SXQ272 - Doctor ever told you had chlamydia (Males and Females 18-59)
+sxq$SXQ272[sxq$SXQ272==7 | sxq$SXQ272==9] = NA
+sxq$chlamydia <- sxq$SXQ272
+
+# SXQ280 - Are you circumcised or uncircumcised (Males 18-59)
+sxq$SXQ280[sxq$SXQ280==7 | sxq$SXQ280==9] = NA
+sxq$circumcised <- sxq$SXQ280
+
+# SXQ292 - Describe sexual orientation (male) (Males 18-59)
 sxq$SXQ292[sxq$SXQ292==7 | sxq$SXQ292==9] = NA
 # SXQ756 - CHECK ITEM
-# SXQ294 - Describe sexual orientation (female)
+# SXQ294 - Describe sexual orientation (female) (Females 18-59)
 sxq$SXQ294[sxq$SXQ294==7 | sxq$SXQ294==9] = NA
+#Do you think of yourself as...
+# 1	Heterosexual or straight
+# 2	Homosexual or gay
+# 3	Bisexual (attracted to men and women)	25	1752
+# 4	Something else
+# 5	Not sure
+sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
+sxq$heterosexual <- ifelse(sxq$sexual_orientation==1, TRUE, FALSE)
 
-# Ever had vaginal, anal, or oral sex
-sxq$ever_sex <- sxq$SXD021
-
-# How old were you when you had sex for the first time?
-sxq$age_first_sex <- sxq$SXD031
 
 # In your lifetime, with how many [men/women] have you had any kind of sex?
 #If never had sex, coded as zero
@@ -819,26 +954,6 @@ sxq$vaginal_sex_partners <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners)
 #If never had sex, set number of vaginal sex partners in past year to zero
 sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners_year)
 
-#Do you think of yourself as...
-# 1	Heterosexual or straight
-# 2	Homosexual or gay
-# 3	Bisexual (attracted to men and women)	25	1752
-# 4	Something else
-# 5	Not sure
-sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
-sxq$heterosexual <- ifelse(sxq$sexual_orientation==1, TRUE, FALSE)
-
-# In the past 12 months, did you have any kind of sex with a person that you never had sex with before?
-sxq$new_partner <- sxq$SXQ648
-sxq$new_partner <- ifelse(sxq$ever_sex==2, 2, sxq$new_partner)
-
-# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years older than you?
-sxq$older_partners<- sxq$SXQ590
-sxq$older_partners <- ifelse(sxq$ever_sex==2, 0, sxq$older_partners)
-
-# Of the persons you had any kind of sex with in the past 12 months, how many were five or more years younger than you?
-sxq$younger_partners <- sxq$SXQ600
-sxq$younger_partners <- ifelse(sxq$ever_sex==2, 0, sxq$younger_partners)
 
 # Analysts should be aware that the 2011-2012 sexual behavior data has some inconsistencies in terms of
 # number of partners reported for each type of sex. For example, about 7% of males and 4% of females
