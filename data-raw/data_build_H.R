@@ -355,11 +355,12 @@ bmx = read.xport('data-raw/NHANES data/BMX_H.XPT')
 
 
 # MGX Grip strength data
+msx = read.xport('data-raw/NHANES data/MGX_H.XPT')
 
 # SEQN - Respondent sequence number
 # SEQN - Respondent sequence number
 # MGDEXSTS - Grip test status
-msx$gripteststatus <- mgx$MGDEXSTS
+msx$gripteststatus <- msx$MGDEXSTS
 
 # MGD050 - Ever had surgery on hands or wrists
 msx$everhandsurgery <- msx$MGD050
@@ -439,7 +440,7 @@ msx$hand2test3effort <- msx$MGXH2T3E
 
 
 
-msx = read.xport('data-raw/NHANES data/MGX_H.XPT')
+
 
 # Fasting -----------------------------------------------------------------
 
@@ -990,6 +991,280 @@ sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_part
 # sex partners in the past 12 months.
 
 
+# Diet --------------------------------------------------------------------
+dr1 <- read.xport('data-raw/NHANES data/DR1TOT_H.XPT')
+
+# SEQN - Respondent sequence number
+# WTDRD1 - Dietary day one sample weight
+# WTDR2D - Dietary two-day sample weight
+# DR1DRSTZ - Dietary recall status
+# DR1EXMER - Interviewer ID code
+# DRABF - Breast-fed infant (either day)
+# DRDINT - Number of days of intake
+# DR1DBIH - # of days b/w intake and HH interview
+#   DR1DAY - Intake day of the week
+# DR1LANG - Language respondent used mostly
+# DR1MNRSP - Main respondent for this interview
+# DR1HELPD - Helped in responding for this interview
+# DBQ095Z - Type of table salt used
+# DBD100 - How often add salt to food at table
+# DRQSPREP - Salt used in preparation?
+#   DR1STY - Salt used at table yesterday?
+#   DR1SKY - Type of salt used yesterday
+# DRQSDIET - On special diet?
+#   DRQSDT1 - Weight loss/Low calorie diet
+# DRQSDT2 - Low fat/Low cholesterol diet
+# DRQSDT3 - Low salt/Low sodium diet
+# DRQSDT4 - Sugar free/Low sugar diet
+# DRQSDT5 - Low fiber diet
+# DRQSDT6 - High fiber diet
+# DRQSDT7 - Diabetic diet
+# DRQSDT8 - Weight gain/Muscle building diet
+# DRQSDT9 - Low carbohydrate diet
+# DRQSDT10 - High protein diet
+# DRQSDT11 - Gluten-free/Celiac diet
+# DRQSDT12 - Renal/Kidney diet
+# DRQSDT91 - Other special diet
+# DR1TNUMF - Number of foods/beverages reported
+# DR1TKCAL - Energy (kcal)
+# DR1TPROT - Protein (gm)
+# DR1TCARB - Carbohydrate (gm)
+# DR1TSUGR - Total sugars (gm)
+# DR1TFIBE - Dietary fiber (gm)
+# DR1TTFAT - Total fat (gm)
+# DR1TSFAT - Total saturated fatty acids (gm)
+# DR1TMFAT - Total monounsaturated fatty acids (gm)
+# DR1TPFAT - Total polyunsaturated fatty acids (gm)
+# DR1TCHOL - Cholesterol (mg)
+# DR1TATOC - Vitamin E as alpha-tocopherol (mg)
+# DR1TATOA - Added alpha-tocopherol (Vitamin E) (mg)
+# DR1TRET - Retinol (mcg)
+# DR1TVARA - Vitamin A, RAE (mcg)
+# DR1TACAR - Alpha-carotene (mcg)
+# DR1TBCAR - Beta-carotene (mcg)
+# DR1TCRYP - Beta-cryptoxanthin (mcg)
+# DR1TLYCO - Lycopene (mcg)
+# DR1TLZ - Lutein + zeaxanthin (mcg)
+# DR1TVB1 - Thiamin (Vitamin B1) (mg)
+# DR1TVB2 - Riboflavin (Vitamin B2) (mg)
+# DR1TNIAC - Niacin (mg)
+# DR1TVB6 - Vitamin B6 (mg)
+# DR1TFOLA - Total folate (mcg)
+# DR1TFA - Folic acid (mcg)
+# DR1TFF - Food folate (mcg)
+# DR1TFDFE - Folate, DFE (mcg)
+# DR1TCHL - Total choline (mg)
+# DR1TVB12 - Vitamin B12 (mcg)
+# DR1TB12A - Added vitamin B12 (mcg)
+# DR1TVC - Vitamin C (mg)
+# DR1TVD - Vitamin D (D2 + D3) (mcg)
+# DR1TVK - Vitamin K (mcg)
+# DR1TCALC - Calcium (mg)
+# DR1TPHOS - Phosphorus (mg)
+# DR1TMAGN - Magnesium (mg)
+# DR1TIRON - Iron (mg)
+# DR1TZINC - Zinc (mg)
+# DR1TCOPP - Copper (mg)
+# DR1TSODI - Sodium (mg)
+# DR1TPOTA - Potassium (mg)
+# DR1TSELE - Selenium (mcg)
+# DR1TCAFF - Caffeine (mg)
+# DR1TTHEO - Theobromine (mg)
+# DR1TALCO - Alcohol (gm)
+# DR1TMOIS - Moisture (gm)
+# DR1TS040 - SFA 4:0 (Butanoic) (gm)
+# DR1TS060 - SFA 6:0 (Hexanoic) (gm)
+# DR1TS080 - SFA 8:0 (Octanoic) (gm)
+# DR1TS100 - SFA 10:0 (Decanoic) (gm)
+# DR1TS120 - SFA 12:0 (Dodecanoic) (gm)
+# DR1TS140 - SFA 14:0 (Tetradecanoic) (gm)
+# DR1TS160 - SFA 16:0 (Hexadecanoic) (gm)
+# DR1TS180 - SFA 18:0 (Octadecanoic) (gm)
+# DR1TM161 - MFA 16:1 (Hexadecenoic) (gm)
+# DR1TM181 - MFA 18:1 (Octadecenoic) (gm)
+# DR1TM201 - MFA 20:1 (Eicosenoic) (gm)
+# DR1TM221 - MFA 22:1 (Docosenoic) (gm)
+# DR1TP182 - PFA 18:2 (Octadecadienoic) (gm)
+# DR1TP183 - PFA 18:3 (Octadecatrienoic) (gm)
+# DR1TP184 - PFA 18:4 (Octadecatetraenoic) (gm)
+# DR1TP204 - PFA 20:4 (Eicosatetraenoic) (gm)
+# DR1TP205 - PFA 20:5 (Eicosapentaenoic) (gm)
+# DR1TP225 - PFA 22:5 (Docosapentaenoic) (gm)
+# DR1TP226 - PFA 22:6 (Docosahexaenoic) (gm)
+# DR1_300 - Compare food consumed yesterday to usual
+# DR1_320Z - Total plain water drank yesterday (gm)
+# DR1_330Z - Total tap water drank yesterday (gm)
+# DR1BWATZ - Total bottled water drank yesterday (gm)
+# DR1TWS - Tap water source
+# DRD340 - Shellfish eaten during past 30 days
+# DRD350A - Clams eaten during past 30 days
+# DRD350AQ - # of times clams eaten in past 30 days
+#   DRD350B - Crabs eaten during past 30 days
+# DRD350BQ - # of times crabs eaten in past 30 days
+#   DRD350C - Crayfish eaten during past 30 days
+# DRD350CQ - # of times crayfish eaten past 30 days
+#   DRD350D - Lobsters eaten during past 30 days
+# DRD350DQ - # of times lobsters eaten past 30 days
+#   DRD350E - Mussels eaten during past 30 days
+# DRD350EQ - # of times mussels eaten in past 30 days
+#   DRD350F - Oysters eaten during past 30 days
+# DRD350FQ - # of times oysters eaten in past 30 days
+#   DRD350G - Scallops eaten during past 30 days
+# DRD350GQ - # of times scallops eaten past 30 days
+#   DRD350H - Shrimp eaten during past 30 days
+# DRD350HQ - # of times shrimp eaten in past 30 days
+#   DRD350I - Other shellfish eaten past 30 days
+# DRD350IQ - # of times other shellfish eaten
+#   DRD350J - Other unknown shellfish eaten past 30 d
+# DRD350JQ - # of times other unknown shellfish eaten
+#   DRD350K - Refused on shellfish eaten past 30 days
+# DRD360 - Fish eaten during past 30 days
+# DRD370A - Breaded fish products eaten past 30 days
+# DRD370AQ - # of times breaded fish products eaten
+#   DRD370B - Tuna eaten during past 30 days
+# DRD370BQ - # of times tuna eaten in past 30 days
+#   DRD370C - Bass eaten during past 30 days
+# DRD370CQ - # of times bass eaten in past 30 days
+#   DRD370D - Catfish eaten during past 30 days
+# DRD370DQ - # of times catfish eaten in past 30 days
+#   DRD370E - Cod eaten during past 30 days
+# DRD370EQ - # of times cod eaten in past 30 days
+#   DRD370F - Flatfish eaten during past 30 days
+# DRD370FQ - # of times flatfish eaten past 30 days
+#   DRD370G - Haddock eaten during past 30 days
+# DRD370GQ - # of times haddock eaten in past 30 days
+#   DRD370H - Mackerel eaten during past 30 days
+# DRD370HQ - # of times mackerel eaten past 30 days
+#   DRD370I - Perch eaten during past 30 days
+# DRD370IQ - # of times perch eaten in past 30 days
+#   DRD370J - Pike eaten during past 30 days
+# DRD370JQ - # of times pike eaten in past 30 days
+#   DRD370K - Pollock eaten during past 30 days
+# DRD370KQ - # of times pollock eaten in past 30 days
+#   DRD370L - Porgy eaten during past 30 days
+# DRD370LQ - # of times porgy eaten in past 30 days
+#   DRD370M - Salmon eaten during past 30 days
+# DRD370MQ - # of times salmon eaten in past 30 days
+#   DRD370N - Sardines eaten during past 30 days
+# DRD370NQ - # of times sardines eaten past 30 days
+#   DRD370O - Sea bass eaten during past 30 days
+# DRD370OQ - # of times sea bass eaten past 30 days
+#   DRD370P - Shark eaten during past 30 days
+# DRD370PQ - # of times shark eaten in past 30 days
+#   DRD370Q - Swordfish eaten during past 30 days
+# DRD370QQ - # of times swordfish eaten past 30 days
+#   DRD370R - Trout eaten during past 30 days
+# DRD370RQ - # of times trout eaten in past 30 days
+#   DRD370S - Walleye eaten during past 30 days
+# DRD370SQ - # of times walleye eaten in past 30 days
+#   DRD370T - Other fish eaten during past 30 days
+# DRD370TQ - # of times other fish eaten past 30 days
+#   DRD370U - Other unknown fish eaten in past 30 days
+# DRD370UQ - # of times other unknown fish eaten
+#   DRD370V - Refused on fish eaten past 30 days
+
+# Diet day 2 --------------------------------------------------------------
+
+dr2 <- read.xport('data-raw/NHANES data/DR2TOT_H.XPT')
+
+# SEQN - Respondent sequence number
+# WTDRD1 - Dietary day one sample weight
+# WTDR2D - Dietary two-day sample weight
+# DR2DRSTZ - Dietary recall status
+# DR2EXMER - Interviewer ID code
+# DRABF - Breast-fed infant (either day)
+# DRDINT - Number of days of intake
+# DR2DBIH - # of days b/w intake and HH interview
+#   DR2DAY - Intake day of the week
+# DR2LANG - Language respondent used mostly
+# DR2MNRSP - Main respondent for this interview
+# DR2HELPD - Helped in responding for this interview
+# DR2TNUMF - Number of foods/beverages reported
+# DR2STY - Salt used at table yesterday?
+#   DR2SKY - Type of salt used yesterday
+# DR2TKCAL - Energy (kcal)
+# DR2TPROT - Protein (gm)
+# DR2TCARB - Carbohydrate (gm)
+# DR2TSUGR - Total sugars (gm)
+# DR2TFIBE - Dietary fiber (gm)
+# DR2TTFAT - Total fat (gm)
+# DR2TSFAT - Total saturated fatty acids (gm)
+# DR2TMFAT - Total monounsaturated fatty acids (gm)
+# DR2TPFAT - Total polyunsaturated fatty acids (gm)
+# DR2TCHOL - Cholesterol (mg)
+# DR2TATOC - Vitamin E as alpha-tocopherol (mg)
+# DR2TATOA - Added alpha-tocopherol (Vitamin E) (mg)
+# DR2TRET - Retinol (mcg)
+# DR2TVARA - Vitamin A, RAE (mcg)
+# DR2TACAR - Alpha-carotene (mcg)
+# DR2TBCAR - Beta-carotene (mcg)
+# DR2TCRYP - Beta-cryptoxanthin (mcg)
+# DR2TLYCO - Lycopene (mcg)
+# DR2TLZ - Lutein + zeaxanthin (mcg)
+# DR2TVB1 - Thiamin (Vitamin B1) (mg)
+# DR2TVB2 - Riboflavin (Vitamin B2) (mg)
+# DR2TNIAC - Niacin (mg)
+# DR2TVB6 - Vitamin B6 (mg)
+# DR2TFOLA - Total folate (mcg)
+# DR2TFA - Folic acid (mcg)
+# DR2TFF - Food folate (mcg)
+# DR2TFDFE - Folate, DFE (mcg)
+# DR2TCHL - Total choline (mg)
+# DR2TVB12 - Vitamin B12 (mcg)
+# DR2TB12A - Added vitamin B12 (mcg)
+# DR2TVC - Vitamin C (mg)
+# DR2TVD - Vitamin D (D2 + D3) (mcg)
+# DR2TVK - Vitamin K (mcg)
+# DR2TCALC - Calcium (mg)
+# DR2TPHOS - Phosphorus (mg)
+# DR2TMAGN - Magnesium (mg)
+# DR2TIRON - Iron (mg)
+# DR2TZINC - Zinc (mg)
+# DR2TCOPP - Copper (mg)
+# DR2TSODI - Sodium (mg)
+# DR2TPOTA - Potassium (mg)
+# DR2TSELE - Selenium (mcg)
+# DR2TCAFF - Caffeine (mg)
+# DR2TTHEO - Theobromine (mg)
+# DR2TALCO - Alcohol (gm)
+# DR2TMOIS - Moisture (gm)
+# DR2TS040 - SFA 4:0 (Butanoic) (gm)
+# DR2TS060 - SFA 6:0 (Hexanoic) (gm)
+# DR2TS080 - SFA 8:0 (Octanoic) (gm)
+# DR2TS100 - SFA 10:0 (Decanoic) (gm)
+# DR2TS120 - SFA 12:0 (Dodecanoic) (gm)
+# DR2TS140 - SFA 14:0 (Tetradecanoic) (gm)
+# DR2TS160 - SFA 16:0 (Hexadecanoic) (gm)
+# DR2TS180 - SFA 18:0 (Octadecanoic) (gm)
+# DR2TM161 - MFA 16:1 (Hexadecenoic) (gm)
+# DR2TM181 - MFA 18:1 (Octadecenoic) (gm)
+# DR2TM201 - MFA 20:1 (Eicosenoic) (gm)
+# DR2TM221 - MFA 22:1 (Docosenoic) (gm)
+# DR2TP182 - PFA 18:2 (Octadecadienoic) (gm)
+# DR2TP183 - PFA 18:3 (Octadecatrienoic) (gm)
+# DR2TP184 - PFA 18:4 (Octadecatetraenoic) (gm)
+# DR2TP204 - PFA 20:4 (Eicosatetraenoic) (gm)
+# DR2TP205 - PFA 20:5 (Eicosapentaenoic) (gm)
+# DR2TP225 - PFA 22:5 (Docosapentaenoic) (gm)
+# DR2TP226 - PFA 22:6 (Docosahexaenoic) (gm)
+# DR2_300 - Compare food consumed yesterday to usual
+# DR2_320Z - Total plain water drank yesterday (gm)
+# DR2_330Z - Total tap water drank yesterday (gm)
+# DR2BWATZ - Total bottled water drank yesterday (gm)
+# DR2TWS - Tap water source
+
+# Prescription medications ------------------------------------------------
+
+rx <-
+  read.xport('data-raw/NHANES data/RXQ_RX_H.XPT') %>%
+  dplyr::select(SEQN, RXDDRUG, RXDDAYS) %>%
+  mutate(
+    RXDDRUG = ifelse(RXDDRUG == "", "none", RXDDRUG)
+  ) %>%
+  pivot_wider(names_from = "RXDDRUG", values_from = "RXDDAYS", values_fill = 0, values_fn = mean)
+
+rx_meds <- rx[c("SEQN", "TESTOSTERONE")]
+
 # Create dataframe --------------------------------------------------------
 
 
@@ -1098,7 +1373,10 @@ d = dem %>%
     savings5000 = ifelse(savings5000 >= 7, NA, savings5000),
     savings5000 = ifelse(savings5000 == 1, 1, 0)
   ) %>%
-  left_join(sxq)
+  left_join(sxq) %>%
+  left_join(dr1) %>%
+  left_join(dr2) %>%
+  left_join(rx_meds)
 
 d$chronic_disease_score <-
   (d$heart_disease == 1) +
