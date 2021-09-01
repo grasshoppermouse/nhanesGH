@@ -746,7 +746,7 @@ sxq$men_eversexwithman <- sxq$SXQ809
 # SXD862 - CHECK ITEM
 # SXQ700 - Ever had vaginal sex with a man (Females 18-69)
 sxq$SXQ700[sxq$SXQ700==7 | sxq$SXQ700==9] = NA
-sxq$wom_evervaginalsexwithman <- sxq$sxq$SXQ700
+sxq$wom_evervaginalsexwithman <- sxq$SXQ700
 
 # SXQ703 - Ever performed oral sex on a man (Females 18-69)
 sxq$SXQ703[sxq$SXQ703==7 | sxq$SXQ703==9] = NA
