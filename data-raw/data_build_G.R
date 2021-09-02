@@ -930,29 +930,25 @@ sxq$SXQ294[sxq$SXQ294==7 | sxq$SXQ294==9] = NA
 # 3	Bisexual (attracted to men and women)	25	1752
 # 4	Something else
 # 5	Not sure
-sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
-sxq$heterosexual <- ifelse(sxq$sexual_orientation==1, TRUE, FALSE)
+# sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
+
 
 
 # In your lifetime, with how many [men/women] have you had any kind of sex?
 #If never had sex, coded as zero
-sxq$sex_partners <- ifelse(is.na(sxq$SXD171), sxq$SXD101, sxq$SXD171)
+# sxq$sex_partners <- ifelse(is.na(sxq$SXD171), sxq$SXD101, sxq$SXD171)
 
 # In your lifetime, with how many [men/women] have you had vaginal sex? (ages 18-59)
-sxq$vaginal_sex_partners <- ifelse(is.na(sxq$SXQ824), sxq$SXQ724, sxq$SXQ824)
+# sxq$vaginal_sex_partners <- ifelse(is.na(sxq$SXQ824), sxq$SXQ724, sxq$SXQ824)
 
 #In the past 12 months, with how many [men/women] have you had any kind of sex? (ages 18-59)
 #if never had sex, coded as zero
-sxq$sex_partners_year <- ifelse(is.na(sxq$SXD510), sxq$SXD450, sxq$SXD510)
+# sxq$sex_partners_year <- ifelse(is.na(sxq$SXD510), sxq$SXD450, sxq$SXD510)
 
 # In the past 12 months, with how many [men/women] have you had vaginal sex? (ages 18-59)
-sxq$vaginal_sex_partners_year <- ifelse(is.na(sxq$SXQ827), sxq$SXQ727, sxq$SXQ827)
+# sxq$vaginal_sex_partners_year <- ifelse(is.na(sxq$SXQ827), sxq$SXQ727, sxq$SXQ827)
 
-#If never had sex, set number of vaginal sex partners to zero
-sxq$vaginal_sex_partners <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners)
 
-#If never had sex, set number of vaginal sex partners in past year to zero
-sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners_year)
 
 
 # Analysts should be aware that the 2011-2012 sexual behavior data has some inconsistencies in terms of
@@ -962,17 +958,29 @@ sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_part
 
 sxq2 <-
   sxq %>%
-  left_join(dem[c("SEQN", "sex")]) %>%
+  left_join(dem[c("SEQN", "RIAGENDR")]) %>%
   mutate(
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman)
-
+    evervaginalsex <- ifelse(RIAGENDR == 2, wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    everhetoralsex <- ifelse(RIAGENDR == 2, wom_everoralsexonman, men_everoralsexonwoman),
+    eversamesexoralsex <- ifelse(RIAGENDR == 2, wom_everoralsexonwoman, men_everoralsexonman),
+    everhetanalsex <- ifelse(RIAGENDR == 2, wom_everanalsexwithman, men_everanalsexwithwoman),
+    sex_partners <- ifelse(RIAGENDR == 2, SXD101, SXD171),
+    sex_partners_year <- ifelse(RIAGENDR == 2, SXD450, SXD510),
+    vaginal_sex_partners <- ifelse(RIAGENDR == 2, SXQ724, SXQ824),
+    vaginal_sex_partners_year <- ifelse(RIAGENDR == 2, SXQ727, SXQ827),
+    numsamesexpastyear <- ifelse(RIAGENDR == 2, SXQ490, SXQ550),
+    numsamesexpartners <- ifelse(RIAGENDR == 2, SXQ130, SXQ410),
+    sexualorientation <- ifelse(RIAGENDR == 2, SXQ294, SXQ292)
   ) %>%
-  dplyr::select(-sex)
+  dplyr::select(-RIAGENDR)
+
+#If never had sex, set number of vaginal sex partners to zero
+sxq2$vaginal_sex_partners <- ifelse(sxq2$ever_sex==2, 0, sxq2$vaginal_sex_partners)
+
+#If never had sex, set number of vaginal sex partners in past year to zero
+sxq2$vaginal_sex_partners_year <- ifelse(sxq2$ever_sex==2, 0, sxq2$vaginal_sex_partners_year)
+
+sxq2$heterosexual <- ifelse(sxq2$sexual_orientation==1, TRUE, FALSE)
 
 # Diet --------------------------------------------------------------------
 dr1 <- read.xport('data-raw/NHANES data/DR1TOT_G.XPT')
