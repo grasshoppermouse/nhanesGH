@@ -1269,7 +1269,7 @@ rx_drugs <- read.xport('data-raw/NHANES data/RXQ_DRUG.xpt')
 
 rx2 <-
   read.xport('data-raw/NHANES data/RXQ_RX_H.XPT') %>%
-  dplyr::select(SEQN, RXDDRGID, RXDDAYS) %>%
+  dplyr::select(SEQN, RXDDRGID, RXDDAYS, RXDCOUNT) %>%
   mutate(
     RXDDRUG = ifelse(RXDDRGID == "", "none", RXDDRGID)
   ) %>%
@@ -1278,7 +1278,13 @@ rx2 <-
     RXDDCN1A = ifelse(RXDDRUG == 'none', 'None', RXDDCN1A)
   ) %>%
   group_by(SEQN, RXDDCN1A) %>%
-  summarise(Taking = 1) %>%
+  summarise(
+    Taking = 1,
+    med_count = mean(RXDCOUNT, na.rm=T)
+    ) %>%
+  mutate(
+    med_count = ifelse(is.nan(med_count), 0, med_count)
+  ) %>%
   pivot_wider(names_from = 'RXDDCN1A', values_from = Taking, values_fill = 0, names_repair = 'universal')
 
 # Create dataframe --------------------------------------------------------
