@@ -960,7 +960,19 @@ sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_part
 # reported a greater number of vaginal sex partners in the past 12 months compared with number of “total”
 # sex partners in the past 12 months.
 
+sxq2 <-
+  sxq %>%
+  left_join(dem[c("SEQN", "sex")]) %>%
+  mutate(
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    evervaginalsex <- ifelse(sex == "female", wom_evervaginalsexwithman, men_evervaginalsexwithwoman)
 
+  ) %>%
+  dplyr::select(-sex)
 
 # Diet --------------------------------------------------------------------
 dr1 <- read.xport('data-raw/NHANES data/DR1TOT_G.XPT')
