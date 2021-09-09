@@ -721,6 +721,14 @@ inq <- read.xport('data-raw/NHANES data/INQ_G.XPT')
 
 
 sxq <- read.xport('data-raw/NHANES data/SXQ_G.XPT')
+
+
+# SXD862 - CHECK ITEM BOX 1A CHECK ITEM SXD.862: IF SXQ.800, SXQ.803, SXQ.806, AND SXQ.809
+# NOT EQUAL TO '1', GO TO BOX 8. OTHERWISE, SXD031.Target:Males only 18 YEARS - 69 YEARS
+sxq$SXD862 <- sxq$SXQ800 != 1 & sxq$SXQ803 != 1 & sxq$SXQ806 != 1 & sxq$SXQ809 != 1
+
+sxq$SXD862b <- sxq$SXQ800 == 2 & sxq$SXQ803 == 2 & sxq$SXQ806 == 2 & sxq$SXQ809 == 2
+
 sxq[sxq==77777 | sxq==99999] = NA
 
 # SXD021 - Ever had vaginal, anal, or oral sex (Males and Females 18-69)
@@ -744,6 +752,7 @@ sxq$SXQ809[sxq$SXQ809==7 | sxq$SXQ809==9] = NA
 sxq$men_eversexwithman <- sxq$SXQ809
 
 # SXD862 - CHECK ITEM
+
 # SXQ700 - Ever had vaginal sex with a man (Females 18-69)
 sxq$SXQ700[sxq$SXQ700==7 | sxq$SXQ700==9] = NA
 sxq$wom_evervaginalsexwithman <- sxq$SXQ700
@@ -958,27 +967,41 @@ sxq$SXQ294[sxq$SXQ294==7 | sxq$SXQ294==9] = NA
 
 sxq2 <-
   sxq %>%
-  left_join(dem[c("SEQN", "RIAGENDR")]) %>%
+  left_join(dem[c("SEQN", "RIAGENDR", "RIDAGEYR")]) %>%
   mutate(
-    evervaginalsex <- ifelse(RIAGENDR == 2, wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
-    everhetoralsex <- ifelse(RIAGENDR == 2, wom_everoralsexonman, men_everoralsexonwoman),
-    eversamesexoralsex <- ifelse(RIAGENDR == 2, wom_everoralsexonwoman, men_everoralsexonman),
-    everhetanalsex <- ifelse(RIAGENDR == 2, wom_everanalsexwithman, men_everanalsexwithwoman),
-    sex_partners <- ifelse(RIAGENDR == 2, SXD101, SXD171),
-    sex_partners_year <- ifelse(RIAGENDR == 2, SXD450, SXD510),
-    vaginal_sex_partners <- ifelse(RIAGENDR == 2, SXQ724, SXQ824),
-    vaginal_sex_partners_year <- ifelse(RIAGENDR == 2, SXQ727, SXQ827),
-    numsamesexpastyear <- ifelse(RIAGENDR == 2, SXQ490, SXQ550),
-    numsamesexpartners <- ifelse(RIAGENDR == 2, SXQ130, SXQ410),
-    sexualorientation <- ifelse(RIAGENDR == 2, SXQ294, SXQ292)
+    evervaginalsex = ifelse(RIAGENDR == 2, wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    everhetoralsex = ifelse(RIAGENDR == 2, wom_everoralsexonman, men_everoralsexonwoman),
+    eversamesexpartner = ifelse(RIAGENDR == 2, wom_eversexwithwoman, men_eversexwithman),
+    eversamesexoralsex = ifelse(RIAGENDR == 2, wom_everoralsexonwoman, men_everoralsexonman),
+    everhetanalsex = ifelse(RIAGENDR == 2, wom_everanalsexwithman, men_everanalsexwithwoman),
+    sex_partners = ifelse(RIAGENDR == 2, SXD101, SXD171),
+    sex_partners_year = ifelse(RIAGENDR == 2, SXD450, SXD510),
+    vaginal_sex_partners = ifelse(RIAGENDR == 2, SXQ724, SXQ824),
+    vaginal_sex_partners_year = ifelse(RIAGENDR == 2, SXQ727, SXQ827),
+    numsamesexpastyear = ifelse(RIAGENDR == 2, SXQ490, SXQ550),
+    numsamesexpartners = ifelse(RIAGENDR == 2, SXQ130, SXQ410),
+    sexualorientation = ifelse(RIAGENDR == 2, SXQ294, SXQ292)
   ) %>%
   dplyr::select(-RIAGENDR)
 
-#If never had sex, set number of vaginal sex partners to zero
-sxq2$vaginal_sex_partners <- ifelse(sxq2$ever_sex==2, 0, sxq2$vaginal_sex_partners)
+#If never had sex with same sex partner, set ever had oral sex with same sex partner to no
+sxq2$eversamesexoralsex <- ifelse(sxq2$eversamesexpartner==2 & is.na(sxq2$eversamesexoralsex), 2, sxq2$eversamesexoralsex)
 
-#If never had sex, set number of vaginal sex partners in past year to zero
-sxq2$vaginal_sex_partners_year <- ifelse(sxq2$ever_sex==2, 0, sxq2$vaginal_sex_partners_year)
+#If number of life time sex partners = 0, set number of sex partners in last year to 0 (missing ppl over 59)
+sxq2$sex_partners_year <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$sex_partners_year), 0, sxq2$sex_partners_year)
+
+#If number of sex partners equals 0, set number of vaginal sex partners to zero
+sxq2$vaginal_sex_partners <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$vaginal_sex_partners), 0, sxq2$vaginal_sex_partners)
+
+#If number of sex partners past year equals 0, set number of vaginal sex partners in past year to zero
+sxq2$vaginal_sex_partners_year <- ifelse(sxq2$sex_partners_year ==0 & is.na(sxq2$vaginal_sex_partners_year), 0, sxq2$vaginal_sex_partners_year)
+
+#If never had same sex encounter, set number of same sex partners to 0
+sxq2$numsamesexpartners <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$numsamesexpartners), 0, sxq2$numsamesexpartners)
+
+#If never had same sex encounter, set number of same sex partners in past year to 0
+sxq2$numsamesexpastyear <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$numsamesexpastyear), 0, sxq2$numsamesexpastyear)
+
 
 sxq2$heterosexual <- ifelse(sxq2$sexual_orientation==1, TRUE, FALSE)
 
