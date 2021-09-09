@@ -1003,7 +1003,7 @@ sxq2$numsamesexpartners <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$nums
 sxq2$numsamesexpastyear <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$numsamesexpastyear), 0, sxq2$numsamesexpastyear)
 
 
-sxq2$heterosexual <- ifelse(sxq2$sexual_orientation==1, TRUE, FALSE)
+sxq2$heterosexual <- ifelse(sxq2$sexualorientation==1, TRUE, FALSE)
 
 # Diet --------------------------------------------------------------------
 dr1 <- read.xport('data-raw/NHANES data/DR1TOT_G.XPT')
