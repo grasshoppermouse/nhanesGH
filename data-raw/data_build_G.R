@@ -1399,8 +1399,11 @@ d <- dem %>%
   # left_join(thyrod[,c("SEQN","LBXT4F","LBDTSH1S")]) %>%
   #left_join(thyrod[,c("SEQN", "LBXT4F","LBDTSH1S")]) %>%
   #rename(T4free=LBXT4F, TSH=LBDTSH1S) %>%
-  left_join(cbc[c('SEQN', 'LBXWBCSI', 'LBXRBCSI', 'LBXHGB', 'LBXHCT')]) %>%
-  rename(whitebloodcell = LBXWBCSI, redbloodcell = LBXRBCSI, hemoglobin = LBXHGB, hematocrit = LBXHCT) %>%
+  left_join(cbc[c('SEQN', 'LBXWBCSI', 'LBXRBCSI', 'LBXHGB', 'LBXHCT', 'LBDLYMNO', 'LBDMONO', 'LBDNENO', 'LBDEONO','LBDBANO', 'LBXLYPCT',
+                  'LBXMOPCT', 'LBXNEPCT', 'LBXEOPCT','LBXBAPCT')]) %>%
+  rename(whitebloodcell = LBXWBCSI, redbloodcell = LBXRBCSI, hemoglobin = LBXHGB, hematocrit = LBXHCT, lymphocytes = LBDLYMNO,
+         monocytes = LBDMONO, neutrophils = LBDNENO, eosinophils = LBDEONO, basophils = LBDBANO, lymphocyte_percent = LBXLYPCT,
+         monocyte_percent = LBXMOPCT, neutrophil_percent = LBXNEPCT, eosinophil_percent = LBXEOPCT, basophil_percent =  LBXBAPCT) %>%
   left_join(pfq[c('SEQN', 'PFQ054', "PFQ061B", "PFQ061C", "PFQ061D", "PFQ061E","PFQ061H","PFQ061I","PFQ061J","PFQ061K","PFQ061L",
   "PFQ061M","PFQ061N","PFQ061O","PFQ061P", "PFQ061T", 'disability', 'disability_score', 'locomotion_disability', 'physical_disease_count', 'depressed_selfreport')]) %>%
   rename(special_equipment=PFQ054) %>%
@@ -1442,11 +1445,17 @@ d <- dem %>%
     savings5000 = ifelse(savings5000 >= 7, NA, savings5000),
     savings5000 = ifelse(savings5000 == 1, 1, 0)
   ) %>%
-  left_join(sxq) %>%
-  left_join(dr1) %>%
-  left_join(dr2) %>%
+  left_join(sxq2) %>%
+  left_join(dr1[c('SEQN', 'DR1TKCAL')]) %>%
+  rename(d1calories = DR1TKCAL) %>%
+  left_join(dr2[c('SEQN', 'DR2TKCAL')]) %>%
+  rename(d2calories = DR2TKCAL) %>%
   left_join(rx_meds) %>%
   left_join(rx2)
+
+
+d$avgcalories <- (d$d1calories + d$d2calories)/2
+
 
 d$chronic_disease_score <-
   (d$heart_disease == 1) +
