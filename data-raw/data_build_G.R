@@ -407,7 +407,6 @@ msx$hand2test3effort <- msx$MGXH2T3E
 fastqx = read.xport('data-raw/NHANES data/FASTQX_G.XPT')
 
 
-
 # Testosterone ------------------------------------------------------------
 
 
@@ -691,11 +690,23 @@ hiq <- read.xport('data-raw/NHANES data/HIQ_G.XPT')
 # Physical activity -------------------------------------------------------
 
 # PAQ605 - Does your work involve vigorous activity (large increase in breathing/heart rate)
+# PAQ610 - Days vigorous work
+# PAD615 - Minutes vigorous-intensity work
 # PAQ620 - Does your work involve moderate activity (small increase in breathing/heart rate)
+# PAQ625 - Number of days moderate work
+# PAD630 - Minutes moderate-intensity work
+# PAQ640 - Number of days walk or bicycle
+# PAD645 - Minutes walk/bicycle for transportation
 # PAQ650 - Vigorous recreational activities
+# PAQ655 - Days vigorous recreational activities
+# PAD660 - Minutes vigorous recreational activities
 # PAQ665 - Moderate recreational activities
+# PAQ670 - Days moderate recreational activities
+# PAD675 - Minutes moderate recreational activities
+# PAQ635 - Walk or bicycle: The next questions exclude the physical activity of work that you have already mentioned. Now I would like to ask you about the usual way {you travel/SP travels} to and from places. For example to work, for shopping, to school. {Do you/Does SP} walk or use a bicycle for at least 10 minutes continuously to get to and from places?
 
 paq <- read.xport('data-raw/NHANES data/PAQ_G.XPT')
+
 
 
 # Finances ----------------------------------------------------------------
@@ -990,8 +1001,11 @@ sxq2$eversamesexoralsex <- ifelse(sxq2$eversamesexpartner==2 & is.na(sxq2$eversa
 #If number of life time sex partners = 0, set number of sex partners in last year to 0 (missing ppl over 59)
 sxq2$sex_partners_year <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$sex_partners_year), 0, sxq2$sex_partners_year)
 
-#If number of sex partners equals 0, set number of vaginal sex partners to zero
+#If number of sex partners equals 0, set number of vaginal sex partners to zero, Not needed when 1009 is included
 sxq2$vaginal_sex_partners <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$vaginal_sex_partners), 0, sxq2$vaginal_sex_partners)
+
+#If never had vaginal sex, set vaginal sex partners to 0
+sxq2$vaginal_sex_partners <- ifelse(sxq2$evervaginalsex == 2, 0, sxq2$vaginal_sex_partners)
 
 #If number of sex partners past year equals 0, set number of vaginal sex partners in past year to zero
 sxq2$vaginal_sex_partners_year <- ifelse(sxq2$sex_partners_year ==0 & is.na(sxq2$vaginal_sex_partners_year), 0, sxq2$vaginal_sex_partners_year)
@@ -1004,6 +1018,8 @@ sxq2$numsamesexpastyear <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$nums
 
 
 sxq2$heterosexual <- ifelse(sxq2$sexualorientation==1, TRUE, FALSE)
+
+stop()
 
 # Diet --------------------------------------------------------------------
 dr1 <- read.xport('data-raw/NHANES data/DR1TOT_G.XPT')
@@ -1335,6 +1351,54 @@ rx2 <-
   pivot_wider(names_from = 'RXDDCN1A', values_from = Taking, values_fill = 0, names_repair = 'universal')
 
 
+
+# Occupation --------------------------------------------------------------
+
+occ <- read.xport('data-raw/NHANES data/OCQ_G.XPT')
+sal <- read_excel('data-raw/data/national_M2011_dl.xls', na = c("*", "#"))
+
+
+
+occ_dict <- c(
+  "1" = "11-0000",
+  "2" = "13-0000",
+  "3" = "15-0000",
+  "4" = "17-0000",
+  "5" = "19-0000",
+  "6" = "21-0000",
+  "7" = "23-0000",
+  "8" = "25-0000",
+  "9" = "27-0000",
+  "10" = "29-0000",
+  "11" = "31-0000",
+  "12" = "33-0000",
+  "13" = "35-0000",
+  "14" = "37-0000",
+  "15" = "39-0000",
+  "16" = "41-0000",
+  "17" = "43-0000",
+  "18" = "45-0000",
+  "19" = "47-0000",
+  "20" = "49-0000",
+  "21" = "51-0000",
+  "22" = "53-0000"
+)
+
+occ$census_code_curr <- occ_dict[as.character(occ$OCD241)]
+occ$census_code_long <- occ_dict[as.character(occ$OCD392)]
+occ$census_code_best <- ifelse(is.na(occ$census_code_curr), occ$census_code_long, occ$census_code_curr)
+
+occ2 <-
+  left_join(occ, sal[c("OCC_CODE", "A_MEDIAN")], by = c("census_code_curr" = "OCC_CODE")) %>%
+  rename(median_salary_current = A_MEDIAN) %>%
+  left_join(sal[c("OCC_CODE", "A_MEDIAN")], by = c("census_code_long" = "OCC_CODE")) %>%
+  rename(median_salary_long = A_MEDIAN)
+
+occ2$median_salary_max <- pmax(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
+occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
+
+
+
 # Create dataframe --------------------------------------------------------
 
 
@@ -1420,12 +1484,25 @@ d <- dem %>%
     healthcare = ifelse(healthcare >= 7, NA, healthcare),
     healthcare = ifelse(healthcare == 1, 1, 0)
   ) %>%
-  left_join(paq[c('SEQN', 'PAQ605', 'PAQ620', 'PAQ650', 'PAQ665')]) %>%
+  left_join(paq[c('SEQN', 'PAQ605','PAQ610', 'PAD615', 'PAQ620','PAQ625',
+                  'PAD630', 'PAQ635', 'PAQ640', 'PAD645', 'PAQ650', 'PAQ665', 'PAQ655',
+                  'PAD660', 'PAQ670', 'PAD675')]) %>%
   rename(
     vigorous_work = PAQ605,
     moderate_work = PAQ620,
     vigorous_rec = PAQ650,
-    moderate_rec = PAQ665
+    moderate_rec = PAQ665,
+    walkorbike = PAQ635,
+    vig_work_days = PAQ610,
+    vig_work_min = PAD615,
+    mod_work_days = PAQ625,
+    mod_work_min = PAD630,
+    vig_rec_days = PAQ655,
+    vig_rec_min = PAD660,
+    mod_rec_days = PAQ670,
+    mod_rec_min = PAD675,
+    wob_days = PAQ640,
+    wob_min = PAD645
   ) %>%
   mutate(
     vigorous_work = ifelse(vigorous_work >= 7, NA, vigorous_work),
@@ -1435,7 +1512,37 @@ d <- dem %>%
     vigorous_rec = ifelse(vigorous_rec >= 7, NA, vigorous_rec),
     vigorous_rec = ifelse(vigorous_rec == 1, 1, 0),
     moderate_rec = ifelse(moderate_rec >= 7, NA, moderate_rec),
-    moderate_rec = ifelse(moderate_rec == 1, 1, 0)
+    moderate_rec = ifelse(moderate_rec == 1, 1, 0),
+    walkorbike = ifelse(walkorbike >= 7, NA, walkorbike),
+    walkorbike = ifelse(walkorbike == 1, 1, 0),
+    vig_work_days = ifelse(vig_work_days >= 77, NA, vig_work_days),
+    vig_work_days = ifelse(vigorous_work == 0, 0, vig_work_days),
+    vig_work_min = ifelse(vig_work_min >= 7777, NA, vig_work_min),
+    vig_work_min = ifelse(vigorous_work == 0, 0, vig_work_min),
+    mod_work_days = ifelse(mod_work_days >= 77, NA, mod_work_days),
+    mod_work_days = ifelse(moderate_work == 0, 0, mod_work_days),
+    mod_work_min = ifelse(mod_work_min >= 7777, NA, mod_work_min),
+    mod_work_min = ifelse(moderate_work == 0, 0, mod_work_min),
+    vig_rec_days = ifelse(vig_rec_days >= 77, NA, vig_rec_days),
+    vig_rec_days = ifelse(vigorous_rec == 0, 0, vig_rec_days),
+    vig_rec_min = ifelse(vig_rec_min >= 7777, NA, vig_rec_min),
+    vig_rec_min = ifelse(vigorous_rec == 0, 0, vig_rec_min),
+    mod_rec_days = ifelse(mod_rec_days >= 77, NA, mod_rec_days),
+    mod_rec_days = ifelse(moderate_rec == 0, 0, mod_rec_days),
+    mod_rec_min = ifelse(mod_rec_min >=7777, NA, mod_rec_min),
+    mod_rec_min = ifelse(moderate_rec == 0, 0, mod_rec_min),
+    wob_days = ifelse(wob_days >= 77, NA, wob_days),
+    wob_days = ifelse(walkorbike == 0, 0, wob_days),
+    wob_min = ifelse(wob_min >= 7777, NA, wob_min),
+    wob_min = ifelse(walkorbike == 0, 0, wob_min),
+    vig_work_MET = ((vig_work_days*vig_work_min)/60)*8,
+    mod_work_MET = ((mod_work_days*mod_work_min)/60)*4,
+    total_work_MET = vig_work_MET + mod_work_MET,
+    vig_rec_MET = ((vig_rec_days*vig_rec_min)/60)*8,
+    mod_rec_MET = ((mod_rec_days*mod_rec_min)/60)*4,
+    total_rec_MET = vig_rec_MET + mod_rec_MET,
+    wob_MET = ((wob_days*wob_min)/60)*4,
+    tot_MET = total_work_MET + total_rec_MET + wob_MET #MET from NHANES appendix 1
   ) %>%
   left_join(inq[c('SEQN', 'INQ244')]) %>%
   rename(
@@ -1451,7 +1558,8 @@ d <- dem %>%
   left_join(dr2[c('SEQN', 'DR2TKCAL')]) %>%
   rename(d2calories = DR2TKCAL) %>%
   left_join(rx_meds) %>%
-  left_join(rx2)
+  left_join(rx2) %>%
+  left_join(occ2)
 
 
 d$avgcalories <- (d$d1calories + d$d2calories)/2

@@ -455,7 +455,6 @@ msx$hand2test3effort <- msx$MGXH2T3E
 fastqx = read.xport('data-raw/NHANES data/FASTQX_H.XPT')
 
 
-
 # Testosterone ------------------------------------------------------------
 
 
@@ -735,6 +734,8 @@ hiq <- read.xport('data-raw/NHANES data/HIQ_H.XPT')
 # Physical activity -------------------------------------------------------
 
 # PAQ605 - Does your work involve vigorous activity (large increase in breathing/heart rate)
+# PAQ610 - Days vigorous work
+# PAD615 - Minutes vigorous-intensity work
 # PAQ620 - Does your work involve moderate activity (small increase in breathing/heart rate)
 # PAQ650 - Vigorous recreational activities
 # PAQ665 - Moderate recreational activities
@@ -1287,6 +1288,54 @@ rx2 <-
   ) %>%
   pivot_wider(names_from = 'RXDDCN1A', values_from = Taking, values_fill = 0, names_repair = 'universal')
 
+
+
+# Occupation --------------------------------------------------------------
+
+
+occ <- read.xport('data-raw/NHANES data/OCQ_H.XPT')
+sal <- read_excel('data-raw/data/national_M2013_dl.xls', na = c("*", "#"))
+
+
+
+occ_dict <- c(
+  "1" = "11-0000",
+  "2" = "13-0000",
+  "3" = "15-0000",
+  "4" = "17-0000",
+  "5" = "19-0000",
+  "6" = "21-0000",
+  "7" = "23-0000",
+  "8" = "25-0000",
+  "9" = "27-0000",
+  "10" = "29-0000",
+  "11" = "31-0000",
+  "12" = "33-0000",
+  "13" = "35-0000",
+  "14" = "37-0000",
+  "15" = "39-0000",
+  "16" = "41-0000",
+  "17" = "43-0000",
+  "18" = "45-0000",
+  "19" = "47-0000",
+  "20" = "49-0000",
+  "21" = "51-0000",
+  "22" = "53-0000"
+)
+
+occ$census_code_curr <- occ_dict[as.character(occ$OCD241)]
+occ$census_code_long <- occ_dict[as.character(occ$OCD392)]
+
+occ2 <-
+  left_join(occ, sal[c("OCC_CODE", "A_MEDIAN")], by = c("census_code_curr" = "OCC_CODE")) %>%
+  rename(median_salary_current = A_MEDIAN) %>%
+  left_join(sal[c("OCC_CODE", "A_MEDIAN")], by = c("census_code_long" = "OCC_CODE")) %>%
+  rename(median_salary_long = A_MEDIAN)
+
+occ2$median_salary_max <- pmax(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
+occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
+
+
 # Create dataframe --------------------------------------------------------
 
 
@@ -1399,7 +1448,8 @@ d = dem %>%
   left_join(dr1) %>%
   left_join(dr2) %>%
   left_join(rx_meds) %>%
-  left_join(rx2)
+  left_join(rx2) %>%
+  left_join(occ2)
 
 d$chronic_disease_score <-
   (d$heart_disease == 1) +
