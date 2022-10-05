@@ -1,5 +1,4 @@
 
-
 ######### CREATE data frame from 2013-2014 data-raw/NHANES data (H series) ############
 
 ### In G series but not in H series ### #fixed 04.30; extraneous and mismatched vars deleted, total vars = 105
@@ -240,13 +239,13 @@ disability_check2 <- pfq20$RIDAGEYR<=59 & pfq20$PFQ049==2 & pfq20$PFQ057==2 & pf
 
 disability_check <- disability_check1 | !disability_check2
 
-pfq20$disability_check = disability_check
+pfq20$disability_check <- disability_check
 
 # Max could be 4 or 5 because 5
 # means "do not do this activity", which
 # could indicate impairment in that activity
 
-max_severity = 5
+max_severity <- 5
 
 disability <-
   (pfq20$PFQ054==1) |
@@ -316,6 +315,7 @@ pfq18$locomotion_disability[!is.na(pfq18$PFQ020)] <- pfq18$PFQ020[!is.na(pfq18$P
 
 # Merge two data frames
 pfq <- rbind(pfq18, pfq20)
+
 
 # Body Measurements -------------------------------------------------------
 
@@ -436,9 +436,8 @@ msx$hand2test3 <- msx$MGXH2T3
 
 # MGXH2T3E - Grip strength, hand 2, test 3 effort
 msx$hand2test3effort <- msx$MGXH2T3E
+
 # MGDCGSZ - Combined grip strength (kg)
-
-
 
 
 
@@ -737,8 +736,17 @@ hiq <- read.xport('data-raw/NHANES data/HIQ_H.XPT')
 # PAQ610 - Days vigorous work
 # PAD615 - Minutes vigorous-intensity work
 # PAQ620 - Does your work involve moderate activity (small increase in breathing/heart rate)
+# PAQ625 - Number of days moderate work
+# PAD630 - Minutes moderate-intensity work
+# PAQ640 - Number of days walk or bicycle
+# PAD645 - Minutes walk/bicycle for transportation
 # PAQ650 - Vigorous recreational activities
+# PAQ655 - Days vigorous recreational activities
+# PAD660 - Minutes vigorous recreational activities
 # PAQ665 - Moderate recreational activities
+# PAQ670 - Days moderate recreational activities
+# PAD675 - Minutes moderate recreational activities
+# PAQ635 - Walk or bicycle: The next questions exclude the physical activity of work that you have already mentioned. Now I would like to ask you about the usual way {you travel/SP travels} to and from places. For example to work, for shopping, to school. {Do you/Does SP} walk or use a bicycle for at least 10 minutes continuously to get to and from places?
 
 paq <- read.xport('data-raw/NHANES data/PAQ_H.XPT')
 
@@ -752,6 +760,12 @@ inq <- read.xport('data-raw/NHANES data/INQ_H.XPT')
 # Sexual Behavior ---------------------------------------------------------
 
 sxq <- read.xport('data-raw/NHANES data/SXQ_H.XPT')
+#Analysts should be aware that the 2013-2014 sexual behavior data has
+ #some inconsistencies in terms of number of partners reported for
+ # each type of sex. For example, about 1.8% of males and 1.0% of 
+ # females reported a greater number of vaginal sex partners in 
+  #the past 12 months compared with number of “total” sex partners
+  # in the past 12 months.
 sxq[sxq==77777 | sxq==99999] = NA
 
 # SXD021 - Ever had vaginal, anal, or oral sex (Males and Females 18-69)
@@ -775,9 +789,10 @@ sxq$SXQ809[sxq$SXQ809==7 | sxq$SXQ809==9] = NA
 sxq$men_eversexwithman <- sxq$SXQ809
 
 # SXD862 - CHECK ITEM
+
 # SXQ700 - Ever had vaginal sex with a man (Females 18-69)
 sxq$SXQ700[sxq$SXQ700==7 | sxq$SXQ700==9] = NA
-sxq$wom_evervaginalsexwithman <- sxq$sxq$SXQ700
+sxq$wom_evervaginalsexwithman <- sxq$SXQ700
 
 # SXQ703 - Ever performed oral sex on a man (Females 18-69)
 sxq$SXQ703[sxq$SXQ703==7 | sxq$SXQ703==9] = NA
@@ -961,35 +976,75 @@ sxq$SXQ294[sxq$SXQ294==7 | sxq$SXQ294==9] = NA
 # 3	Bisexual (attracted to men and women)	25	1752
 # 4	Something else
 # 5	Not sure
-sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
-sxq$heterosexual <- ifelse(sxq$sexual_orientation==1, TRUE, FALSE)
+# sxq$sexual_orientation <- ifelse(is.na(sxq$SXQ292), sxq$SXQ294, sxq$SXQ292)
+
 
 
 # In your lifetime, with how many [men/women] have you had any kind of sex?
 #If never had sex, coded as zero
-sxq$sex_partners <- ifelse(is.na(sxq$SXD171), sxq$SXD101, sxq$SXD171)
+# sxq$sex_partners <- ifelse(is.na(sxq$SXD171), sxq$SXD101, sxq$SXD171)
 
 # In your lifetime, with how many [men/women] have you had vaginal sex? (ages 18-59)
-sxq$vaginal_sex_partners <- ifelse(is.na(sxq$SXQ824), sxq$SXQ724, sxq$SXQ824)
+# sxq$vaginal_sex_partners <- ifelse(is.na(sxq$SXQ824), sxq$SXQ724, sxq$SXQ824)
 
 #In the past 12 months, with how many [men/women] have you had any kind of sex? (ages 18-59)
 #if never had sex, coded as zero
-sxq$sex_partners_year <- ifelse(is.na(sxq$SXD510), sxq$SXD450, sxq$SXD510)
+# sxq$sex_partners_year <- ifelse(is.na(sxq$SXD510), sxq$SXD450, sxq$SXD510)
 
 # In the past 12 months, with how many [men/women] have you had vaginal sex? (ages 18-59)
-sxq$vaginal_sex_partners_year <- ifelse(is.na(sxq$SXQ827), sxq$SXQ727, sxq$SXQ827)
+# sxq$vaginal_sex_partners_year <- ifelse(is.na(sxq$SXQ827), sxq$SXQ727, sxq$SXQ827)
 
-#If never had sex, set number of vaginal sex partners to zero
-sxq$vaginal_sex_partners <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners)
 
-#If never had sex, set number of vaginal sex partners in past year to zero
-sxq$vaginal_sex_partners_year <- ifelse(sxq$ever_sex==2, 0, sxq$vaginal_sex_partners_year)
 
 
 # Analysts should be aware that the 2011-2012 sexual behavior data has some inconsistencies in terms of
 # number of partners reported for each type of sex. For example, about 7% of males and 4% of females
 # reported a greater number of vaginal sex partners in the past 12 months compared with number of “total”
 # sex partners in the past 12 months.
+
+sxq2 <-
+  sxq %>%
+  left_join(dem[c("SEQN", "RIAGENDR", "RIDAGEYR")]) %>%
+  mutate(
+    evervaginalsex = ifelse(RIAGENDR == 2, wom_evervaginalsexwithman, men_evervaginalsexwithwoman),
+    everhetoralsex = ifelse(RIAGENDR == 2, wom_everoralsexonman, men_everoralsexonwoman),
+    eversamesexpartner = ifelse(RIAGENDR == 2, wom_eversexwithwoman, men_eversexwithman),
+    eversamesexoralsex = ifelse(RIAGENDR == 2, wom_everoralsexonwoman, men_everoralsexonman),
+    everhetanalsex = ifelse(RIAGENDR == 2, wom_everanalsexwithman, men_everanalsexwithwoman),
+    sex_partners = ifelse(RIAGENDR == 2, SXD101, SXD171),
+    sex_partners_year = ifelse(RIAGENDR == 2, SXD450, SXD510),
+    vaginal_sex_partners = ifelse(RIAGENDR == 2, SXQ724, SXQ824),
+    vaginal_sex_partners_year = ifelse(RIAGENDR == 2, SXQ727, SXQ827),
+    numsamesexpastyear = ifelse(RIAGENDR == 2, SXQ490, SXQ550),
+    numsamesexpartners = ifelse(RIAGENDR == 2, SXQ130, SXQ410),
+    sexualorientation = ifelse(RIAGENDR == 2, SXQ294, SXQ292)
+  ) %>%
+  dplyr::select(-RIAGENDR)
+
+#If never had sex with same sex partner, set ever had oral sex with same sex partner to no
+sxq2$eversamesexoralsex <- ifelse(sxq2$eversamesexpartner==2 & is.na(sxq2$eversamesexoralsex), 2, sxq2$eversamesexoralsex)
+
+#If number of life time sex partners = 0, set number of sex partners in last year to 0 (missing ppl over 59)
+sxq2$sex_partners_year <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$sex_partners_year), 0, sxq2$sex_partners_year)
+
+#If number of sex partners equals 0, set number of vaginal sex partners to zero, Not needed when 1009 is included
+sxq2$vaginal_sex_partners <- ifelse(sxq2$sex_partners == 0 & is.na(sxq2$vaginal_sex_partners), 0, sxq2$vaginal_sex_partners)
+
+#If never had vaginal sex, set vaginal sex partners to 0
+sxq2$vaginal_sex_partners <- ifelse(sxq2$evervaginalsex == 2, 0, sxq2$vaginal_sex_partners)
+
+#If number of sex partners past year equals 0, set number of vaginal sex partners in past year to zero
+sxq2$vaginal_sex_partners_year <- ifelse(sxq2$sex_partners_year ==0 & is.na(sxq2$vaginal_sex_partners_year), 0, sxq2$vaginal_sex_partners_year)
+
+#If never had same sex encounter, set number of same sex partners to 0
+sxq2$numsamesexpartners <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$numsamesexpartners), 0, sxq2$numsamesexpartners)
+
+#If never had same sex encounter, set number of same sex partners in past year to 0
+sxq2$numsamesexpastyear <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$numsamesexpastyear), 0, sxq2$numsamesexpastyear)
+
+
+sxq2$heterosexual <- ifelse(sxq2$sexualorientation==1, TRUE, FALSE)
+
 
 
 # Diet --------------------------------------------------------------------
@@ -1164,6 +1219,8 @@ dr1 <- read.xport('data-raw/NHANES data/DR1TOT_H.XPT')
 # DRD370UQ - # of times other unknown fish eaten
 #   DRD370V - Refused on fish eaten past 30 days
 
+
+
 # Diet day 2 --------------------------------------------------------------
 
 dr2 <- read.xport('data-raw/NHANES data/DR2TOT_H.XPT')
@@ -1176,7 +1233,7 @@ dr2 <- read.xport('data-raw/NHANES data/DR2TOT_H.XPT')
 # DRABF - Breast-fed infant (either day)
 # DRDINT - Number of days of intake
 # DR2DBIH - # of days b/w intake and HH interview
-#   DR2DAY - Intake day of the week
+# DR2DAY - Intake day of the week
 # DR2LANG - Language respondent used mostly
 # DR2MNRSP - Main respondent for this interview
 # DR2HELPD - Helped in responding for this interview
@@ -1292,7 +1349,6 @@ rx2 <-
 
 # Occupation --------------------------------------------------------------
 
-
 occ <- read.xport('data-raw/NHANES data/OCQ_H.XPT')
 sal <- read_excel('data-raw/data/national_M2013_dl.xls', na = c("*", "#"))
 
@@ -1325,6 +1381,7 @@ occ_dict <- c(
 
 occ$census_code_curr <- occ_dict[as.character(occ$OCD241)]
 occ$census_code_long <- occ_dict[as.character(occ$OCD392)]
+occ$census_code_best <- ifelse(is.na(occ$census_code_curr), occ$census_code_long, occ$census_code_curr)
 
 occ2 <-
   left_join(occ, sal[c("OCC_CODE", "A_MEDIAN")], by = c("census_code_curr" = "OCC_CODE")) %>%
@@ -1336,6 +1393,7 @@ occ2$median_salary_max <- pmax(occ2$median_salary_current, occ2$median_salary_lo
 occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
 
 
+
 # Create dataframe --------------------------------------------------------
 
 
@@ -1343,7 +1401,7 @@ occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_lo
 
 # RIAGENDR - Gender. 1: Male, 2: Female
 
-d = dem %>%
+d <- dem %>%
   dplyr::select(
     SEQN,
     sex = RIAGENDR,
@@ -1399,12 +1457,15 @@ d = dem %>%
   mutate(perceived_abnormal_weight = (perceived_weight != 3)) %>%
   mutate(perceived_weight=factor(perceived_weight, levels=c(3,1,2)), desired_weight=factor(desired_weight, levels=c(3,1,2))) %>%
   # left_join(thyrod[,c("SEQN","LBXT4F","LBDTSH1S")]) %>%
-  # left_join(thyrod[,c("SEQN", "LBXT4F","LBDTSH1S")]) %>%
-  # rename(T4free=LBXT4F, TSH=LBDTSH1S) %>%
-  left_join(cbc[c('SEQN', 'LBXWBCSI', 'LBXRBCSI', 'LBXHGB', 'LBXHCT')]) %>%
-  rename(whitebloodcell = LBXWBCSI, redbloodcell = LBXRBCSI, hemoglobin = LBXHGB, hematocrit = LBXHCT) %>%
+  #left_join(thyrod[,c("SEQN", "LBXT4F","LBDTSH1S")]) %>%
+  #rename(T4free=LBXT4F, TSH=LBDTSH1S) %>%
+  left_join(cbc[c('SEQN', 'LBXWBCSI', 'LBXRBCSI', 'LBXHGB', 'LBXHCT', 'LBDLYMNO', 'LBDMONO', 'LBDNENO', 'LBDEONO','LBDBANO', 'LBXLYPCT',
+                  'LBXMOPCT', 'LBXNEPCT', 'LBXEOPCT','LBXBAPCT')]) %>%
+  rename(whitebloodcell = LBXWBCSI, redbloodcell = LBXRBCSI, hemoglobin = LBXHGB, hematocrit = LBXHCT, lymphocytes = LBDLYMNO,
+         monocytes = LBDMONO, neutrophils = LBDNENO, eosinophils = LBDEONO, basophils = LBDBANO, lymphocyte_percent = LBXLYPCT,
+         monocyte_percent = LBXMOPCT, neutrophil_percent = LBXNEPCT, eosinophil_percent = LBXEOPCT, basophil_percent =  LBXBAPCT) %>%
   left_join(pfq[c('SEQN', 'PFQ054', "PFQ061B", "PFQ061C", "PFQ061D", "PFQ061E","PFQ061H","PFQ061I","PFQ061J","PFQ061K","PFQ061L",
-                  "PFQ061M","PFQ061N","PFQ061O","PFQ061P", "PFQ061T",'disability', 'disability_score', 'locomotion_disability', 'physical_disease_count', 'depressed_selfreport')]) %>%
+                  "PFQ061M","PFQ061N","PFQ061O","PFQ061P", "PFQ061T", 'disability', 'disability_score', 'locomotion_disability', 'physical_disease_count', 'depressed_selfreport')]) %>%
   rename(special_equipment=PFQ054) %>%
   left_join(mcq[,c('SEQN', 'asthma', 'heart_disease', 'stroke', 'bronchitis', 'cancer', 'emphysema', 'arthritis')]) %>%
   left_join(diq[,c('SEQN', 'diabetes')]) %>%
@@ -1419,12 +1480,25 @@ d = dem %>%
     healthcare = ifelse(healthcare >= 7, NA, healthcare),
     healthcare = ifelse(healthcare == 1, 1, 0)
   ) %>%
-  left_join(paq[c('SEQN', 'PAQ605', 'PAQ620', 'PAQ650', 'PAQ665')]) %>%
+  left_join(paq[c('SEQN', 'PAQ605','PAQ610', 'PAD615', 'PAQ620','PAQ625',
+                  'PAD630', 'PAQ635', 'PAQ640', 'PAD645', 'PAQ650', 'PAQ665', 'PAQ655',
+                  'PAD660', 'PAQ670', 'PAD675')]) %>%
   rename(
     vigorous_work = PAQ605,
     moderate_work = PAQ620,
     vigorous_rec = PAQ650,
-    moderate_rec = PAQ665
+    moderate_rec = PAQ665,
+    walkorbike = PAQ635,
+    vig_work_days = PAQ610,
+    vig_work_min = PAD615,
+    mod_work_days = PAQ625,
+    mod_work_min = PAD630,
+    vig_rec_days = PAQ655,
+    vig_rec_min = PAD660,
+    mod_rec_days = PAQ670,
+    mod_rec_min = PAD675,
+    wob_days = PAQ640,
+    wob_min = PAD645
   ) %>%
   mutate(
     vigorous_work = ifelse(vigorous_work >= 7, NA, vigorous_work),
@@ -1434,7 +1508,37 @@ d = dem %>%
     vigorous_rec = ifelse(vigorous_rec >= 7, NA, vigorous_rec),
     vigorous_rec = ifelse(vigorous_rec == 1, 1, 0),
     moderate_rec = ifelse(moderate_rec >= 7, NA, moderate_rec),
-    moderate_rec = ifelse(moderate_rec == 1, 1, 0)
+    moderate_rec = ifelse(moderate_rec == 1, 1, 0),
+    walkorbike = ifelse(walkorbike >= 7, NA, walkorbike),
+    walkorbike = ifelse(walkorbike == 1, 1, 0),
+    vig_work_days = ifelse(vig_work_days >= 77, NA, vig_work_days),
+    vig_work_days = ifelse(vigorous_work == 0, 0, vig_work_days),
+    vig_work_min = ifelse(vig_work_min >= 7777, NA, vig_work_min),
+    vig_work_min = ifelse(vigorous_work == 0, 0, vig_work_min),
+    mod_work_days = ifelse(mod_work_days >= 77, NA, mod_work_days),
+    mod_work_days = ifelse(moderate_work == 0, 0, mod_work_days),
+    mod_work_min = ifelse(mod_work_min >= 7777, NA, mod_work_min),
+    mod_work_min = ifelse(moderate_work == 0, 0, mod_work_min),
+    vig_rec_days = ifelse(vig_rec_days >= 77, NA, vig_rec_days),
+    vig_rec_days = ifelse(vigorous_rec == 0, 0, vig_rec_days),
+    vig_rec_min = ifelse(vig_rec_min >= 7777, NA, vig_rec_min),
+    vig_rec_min = ifelse(vigorous_rec == 0, 0, vig_rec_min),
+    mod_rec_days = ifelse(mod_rec_days >= 77, NA, mod_rec_days),
+    mod_rec_days = ifelse(moderate_rec == 0, 0, mod_rec_days),
+    mod_rec_min = ifelse(mod_rec_min >=7777, NA, mod_rec_min),
+    mod_rec_min = ifelse(moderate_rec == 0, 0, mod_rec_min),
+    wob_days = ifelse(wob_days >= 77, NA, wob_days),
+    wob_days = ifelse(walkorbike == 0, 0, wob_days),
+    wob_min = ifelse(wob_min >= 7777, NA, wob_min),
+    wob_min = ifelse(walkorbike == 0, 0, wob_min),
+    vig_work_MET = ((vig_work_days*vig_work_min)/60)*8,
+    mod_work_MET = ((mod_work_days*mod_work_min)/60)*4,
+    total_work_MET = vig_work_MET + mod_work_MET,
+    vig_rec_MET = ((vig_rec_days*vig_rec_min)/60)*8,
+    mod_rec_MET = ((mod_rec_days*mod_rec_min)/60)*4,
+    total_rec_MET = vig_rec_MET + mod_rec_MET,
+    wob_MET = ((wob_days*wob_min)/60)*4,
+    tot_MET = total_work_MET + total_rec_MET + wob_MET #MET from NHANES appendix 1
   ) %>%
   left_join(inq[c('SEQN', 'INQ244')]) %>%
   rename(
@@ -1444,12 +1548,18 @@ d = dem %>%
     savings5000 = ifelse(savings5000 >= 7, NA, savings5000),
     savings5000 = ifelse(savings5000 == 1, 1, 0)
   ) %>%
-  left_join(sxq) %>%
-  left_join(dr1) %>%
-  left_join(dr2) %>%
+  left_join(sxq2) %>%
+  left_join(dr1[c('SEQN', 'DR1TKCAL')]) %>%
+  rename(d1calories = DR1TKCAL) %>%
+  left_join(dr2[c('SEQN', 'DR2TKCAL')]) %>%
+  rename(d2calories = DR2TKCAL) %>%
   left_join(rx_meds) %>%
   left_join(rx2) %>%
   left_join(occ2)
+
+
+d$avgcalories <- (d$d1calories + d$d2calories)/2
+
 
 d$chronic_disease_score <-
   (d$heart_disease == 1) +
@@ -1492,8 +1602,7 @@ d$suicidalideation1 <- d$DPQ090
 
 # Construct high and low white and red blood cell counts
 
-# Delete two enormous outliers on wbc?
-# d$whitebloodcell[d$whitebloodcell>30] <- NA
+
 
 # WBC count normal range: 4,500 to 10,000 cells/mcL
 d$WBC = cut(d$whitebloodcell, breaks=c(0,4.5,10.1,55), right=F, include.lowest = T, labels=c('Low', 'Normal', 'High'))

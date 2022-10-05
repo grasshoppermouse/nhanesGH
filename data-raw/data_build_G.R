@@ -11,6 +11,55 @@ G_data <- function(){
 
 dem = read.xport('data-raw/NHANES data/DEMO_G.XPT')
 
+# SEQN - Respondent sequence number
+# SDDSRVYR - Data release cycle
+# RIDSTATR - Interview/Examination status
+# RIAGENDR - Gender
+# RIDAGEYR - Age in years at screening
+# RIDAGEMN - Age in months at screening - 0 to 24 mos
+# RIDRETH1 - Race/Hispanic origin
+# RIDRETH3 - Race/Hispanic origin w/ NH Asian
+# RIDEXMON - Six month time period
+# RIDEXAGY - Age in years at exam - 2 to 19 years
+# RIDEXAGM - Age in months at exam - 0 to 19 years
+# DMQMILIZ - Served active duty in US Armed Forces
+# DMQADFC - Served in a foreign country
+# DMDBORN4 - Country of birth
+# DMDCITZN - Citizenship status
+# DMDYRSUS - Length of time in US
+# DMDEDUC3 - Education level - Children/Youth 6-19
+# DMDEDUC2 - Education level - Adults 20+
+# DMDMARTL - Marital status
+# RIDEXPRG - Pregnancy status at exam
+# SIALANG - Language of SP Interview
+# SIAPROXY - Proxy used in SP Interview?
+# SIAINTRP - Interpreter used in SP Interview?
+# FIALANG - Language of Family Interview
+# FIAPROXY - Proxy used in Family Interview?
+# FIAINTRP - Interpreter used in Family Interview?
+# MIALANG - Language of MEC Interview
+# MIAPROXY - Proxy used in MEC Interview?
+# MIAINTRP - Interpreter used in MEC Interview?
+# AIALANGA - Language of ACASI Interview
+# DMDHHSIZ - Total number of people in the Household
+# DMDFMSIZ - Total number of people in the Family
+# DMDHHSZA - # of children 5 years or younger in HH
+# DMDHHSZB - # of children 6-17 years old in HH
+# DMDHHSZE - # of adults 60 years or older in HH
+# DMDHRGND - HH ref person's gender
+# DMDHRAGE - HH ref person's age in years
+# DMDHRBR4 - HH ref person's country of birth
+# DMDHREDU - HH ref person's education level
+# DMDHRMAR - HH ref person's marital status
+# DMDHSEDU - HH ref person's spouse's education level
+# WTINT2YR - Full sample 2 year interview weight
+# WTMEC2YR - Full sample 2 year MEC exam weight
+# SDMVPSU - Masked variance pseudo-PSU
+# SDMVSTRA - Masked variance pseudo-stratum
+# INDHHIN2 - Annual household income
+# INDFMIN2 - Annual family income
+# INDFMPIR - Ratio of family income to poverty
+
 # Marital status
 dem$DMDMARTL[dem$DMDMARTL == 77 | dem$DMDMARTL == 9] <- NA
 
@@ -487,8 +536,6 @@ whq[whq==7 | whq==9 | whq==77 | whq==99] = NA
 cbc = read.xport('data-raw/NHANES data/CBC_G.XPT')
 
 
-## add chronic disease data for exploratory analysis re confounds (eg Jokela et al., 2019)
-
 
 # Medical conditions ------------------------------------------------------
 
@@ -706,8 +753,6 @@ hiq <- read.xport('data-raw/NHANES data/HIQ_G.XPT')
 # PAQ635 - Walk or bicycle: The next questions exclude the physical activity of work that you have already mentioned. Now I would like to ask you about the usual way {you travel/SP travels} to and from places. For example to work, for shopping, to school. {Do you/Does SP} walk or use a bicycle for at least 10 minutes continuously to get to and from places?
 
 paq <- read.xport('data-raw/NHANES data/PAQ_G.XPT')
-
-
 
 # Finances ----------------------------------------------------------------
 
@@ -1019,11 +1064,10 @@ sxq2$numsamesexpastyear <- ifelse(sxq2$eversamesexpartner == 2 & is.na(sxq2$nums
 
 sxq2$heterosexual <- ifelse(sxq2$sexualorientation==1, TRUE, FALSE)
 
-stop()
+
 
 # Diet --------------------------------------------------------------------
 dr1 <- read.xport('data-raw/NHANES data/DR1TOT_G.XPT')
-
 
 # SEQN - Respondent sequence number
 # WTDRD1 - Dietary day one sample weight
@@ -1422,7 +1466,8 @@ d <- dem %>%
     pregnant = RIDEXPRG,
     income = INDFMPIR,
     income2 = INDFMIN2,
-    race = RIDRETH3) %>%
+    race = RIDRETH3
+    ) %>%
   mutate(
     sex = factor(sex, labels=c('male', 'female')),
     top_income = (income==5)*1,
