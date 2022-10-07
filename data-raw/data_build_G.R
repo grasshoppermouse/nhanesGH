@@ -1598,7 +1598,7 @@ d <- dem %>%
     savings5000 = ifelse(savings5000 == 1, 1, 0)
   ) %>%
   left_join(sxq2) %>%
-  left_join(dr1[c('SEQN', 'DR1TKCAL')]) %>%
+  left_join(dr1[c('SEQN', 'WTDRD1', 'WTDR2D', 'DR1TKCAL')]) %>%
   rename(d1calories = DR1TKCAL) %>%
   left_join(dr2[c('SEQN', 'DR2TKCAL')]) %>%
   rename(d2calories = DR2TKCAL) %>%

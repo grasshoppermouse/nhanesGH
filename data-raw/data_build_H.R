@@ -762,8 +762,8 @@ inq <- read.xport('data-raw/NHANES data/INQ_H.XPT')
 sxq <- read.xport('data-raw/NHANES data/SXQ_H.XPT')
 #Analysts should be aware that the 2013-2014 sexual behavior data has
  #some inconsistencies in terms of number of partners reported for
- # each type of sex. For example, about 1.8% of males and 1.0% of 
- # females reported a greater number of vaginal sex partners in 
+ # each type of sex. For example, about 1.8% of males and 1.0% of
+ # females reported a greater number of vaginal sex partners in
   #the past 12 months compared with number of “total” sex partners
   # in the past 12 months.
 sxq[sxq==77777 | sxq==99999] = NA
@@ -1549,7 +1549,7 @@ d <- dem %>%
     savings5000 = ifelse(savings5000 == 1, 1, 0)
   ) %>%
   left_join(sxq2) %>%
-  left_join(dr1[c('SEQN', 'DR1TKCAL')]) %>%
+  left_join(dr1[c('SEQN', 'WTDRD1', 'WTDR2D','DR1TKCAL')]) %>%
   rename(d1calories = DR1TKCAL) %>%
   left_join(dr2[c('SEQN', 'DR2TKCAL')]) %>%
   rename(d2calories = DR2TKCAL) %>%
