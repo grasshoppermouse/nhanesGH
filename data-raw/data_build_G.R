@@ -1445,7 +1445,7 @@ occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_lo
 
 # Create dataframe --------------------------------------------------------
 
-
+#
 # Demographic data
 
 # RIAGENDR - Gender. 1: Male, 2: Female
