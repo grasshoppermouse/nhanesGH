@@ -147,7 +147,7 @@ all_designs <- function(d){
       strata = ~SDMVSTRA ,
       nest = TRUE ,
       weights = ~WTDR2D , #~WTMEC2YR, #~WTINT2YR ,
-      data = d[!is.na(d$WTDR2D), ]
+      data = d_diet
     )
 
   d.design.dietary.adults <-

@@ -5,7 +5,7 @@ library(readxl)
 source('data-raw/data_build_G.R')
 source('data-raw/data_build_H.R')
 source('data-raw/data_build_GH.R')
-source('data-raw/design_build.R')
+source('data-raw/design_build_dietary.R')
 
 d_G <- G_data()
 d_H <- H_data()
