@@ -1607,6 +1607,7 @@ d <- dem %>%
   left_join(occ2)
 
 
+
 d$avgcalories <- (d$d1calories + d$d2calories)/2
 
 
