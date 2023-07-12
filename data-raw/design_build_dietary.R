@@ -75,6 +75,18 @@ standardize_vars <- function(design){
   sd_physical_count <- sqrt(svyvar(~physical_disease_count, design, na.rm=T))[[1]]
   design <- update(design, physical_disease_count_centered = (physical_disease_count - mean_physical_count)/(2*sd_physical_count))
 
+  mean_workMET <- svymean(~total_work_MET, design, na.rm=T)[[1]]
+  sd_workMET <- sqrt(svyvar(~total_work_MET, design, na.rm=T))[[1]]
+  design <- update(design, total_work_MET_centered = (total_work_MET - mean_workMET)/(2*sd_workMET))
+
+  mean_recMET <- svymean(~total_rec_MET, design, na.rm=T)[[1]]
+  sd_recMET <- sqrt(svyvar(~total_rec_MET, design, na.rm=T))[[1]]
+  design <- update(design, total_rec_MET_centered = (total_rec_MET - mean_recMET)/(2*sd_recMET))
+
+  mean_wobMET <- svymean(~wob_MET, design, na.rm=T)[[1]]
+  sd_wobMET <- sqrt(svyvar(~wob_MET, design, na.rm=T))[[1]]
+  design <- update(design, wob_MET_centered = (wob_MET - mean_wobMET)/(2*sd_wobMET))
+
   return(design)
 
 }
@@ -135,8 +147,6 @@ all_designs <- function(d){
       d.design.adults,
       sex == 'female'
     )
-
- # adults_diet = d_diet$age>=18 & d_diet$age<=60
 
   d_diet <- d[!is.na(d$WTDR2D), ]
   adults_diet = d_diet$age>=18 & d_diet$age<=60
