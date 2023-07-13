@@ -87,6 +87,14 @@ standardize_vars <- function(design){
   sd_wobMET <- sqrt(svyvar(~wob_MET, design, na.rm=T))[[1]]
   design <- update(design, wob_MET_centered = (wob_MET - mean_wobMET)/(2*sd_wobMET))
 
+  mean_totMET <- svymean(~tot_MET, design, na.rm=T)[[1]]
+  sd_totMET <- sqrt(svyvar(~tot_MET, design, na.rm=T))[[1]]
+  design <- update(design, tot_MET_centered = (tot_MET - mean_totMET)/(2*sd_totMET))
+
+  mean_foodinsecurity_adult <- svymean(~foodinsecurity_adult, design, na.rm=T)[[1]]
+  sd_foodinsecurity_adult <- sqrt(svyvar(~foodinsecurity_adult, design, na.rm=T))[[1]]
+  design <- update(design, foodinsecurity_adult_centered = (foodinsecurity_adult - mean_foodinsecurity_adult)/(2*sd_foodinsecurity_adult))
+
   return(design)
 
 }
