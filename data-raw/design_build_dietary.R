@@ -95,6 +95,10 @@ standardize_vars <- function(design){
   sd_foodinsecurity_adult <- sqrt(svyvar(~foodinsecurity_adult, design, na.rm=T))[[1]]
   design <- update(design, foodinsecurity_adult_centered = (foodinsecurity_adult - mean_foodinsecurity_adult)/(2*sd_foodinsecurity_adult))
 
+  mean_avgcalories <- svymean(~avgcalories, design, na.rm=T)[[1]]
+  sd_avgcalories <- sqrt(svyvar(~avgcalories, design, na.rm=T))[[1]]
+  design <- update(design, avgcalories_centered = (avgcalories - mean_avgcalories)/(2*sd_avgcalories))
+
   return(design)
 
 }
