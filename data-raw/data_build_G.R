@@ -1445,7 +1445,7 @@ occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_lo
 
 # Create dataframe --------------------------------------------------------
 
-
+#
 # Demographic data
 
 # RIAGENDR - Gender. 1: Male, 2: Female
@@ -1605,6 +1605,7 @@ d <- dem %>%
   left_join(rx_meds) %>%
   left_join(rx2) %>%
   left_join(occ2)
+
 
 
 d$avgcalories <- (d$d1calories + d$d2calories)/2
