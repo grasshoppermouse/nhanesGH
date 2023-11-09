@@ -160,6 +160,12 @@ all_designs <- function(d){
       sex == 'female'
     )
 
+  d.design.adult.heterosexual <-
+    subset(
+      d.design.adults,
+      sexualorientation == 1
+    )
+
   d_diet <- d[!is.na(d$WTDR2D), ]
   adults_diet = d_diet$age>=18 & d_diet$age<=60
 

@@ -64,7 +64,7 @@ dem = read.xport('data-raw/NHANES data/DEMO_H.XPT')
 # INDFMPIR - Ratio of family income to poverty
 
 # Marital status
-dem$DMDMARTL[dem$DMDMARTL == 77 | dem$DMDMARTL == 9] <- NA
+dem$DMDMARTL[dem$DMDMARTL == 77 | dem$DMDMARTL == 99] <- NA
 
 # PHQ-9 -------------------------------------------------------------------
 
@@ -1438,6 +1438,10 @@ d <- dem %>%
     ),
     edu = ifelse(!is.na(edu_child), edu_child, edu),
     partnered = maritalstatus == 1 | maritalstatus == 6,
+    partnered2 <- case_when(
+      maritalstatus == 2 |  maritalstatus == 3 |  maritalstatus == 4 |  maritalstatus == 5 ~ 0,
+      maritalstatus == 6 ~ 1,
+      maritalstatus == 1 ~ 2),
     race = factor(race, labels = c('MexicanAmerican', 'OtherHispanic', 'NonHispanicWhite', 'NonHispanicBlack',
                                    'NonHispanicAsian', 'OtherRace'))
     ) %>%
