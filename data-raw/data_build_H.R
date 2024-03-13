@@ -1445,8 +1445,8 @@ d <- dem %>%
     race = factor(race, labels = c('MexicanAmerican', 'OtherHispanic', 'NonHispanicWhite', 'NonHispanicBlack',
                                    'NonHispanicAsian', 'OtherRace'))
     ) %>%
-  left_join(bmx[,c('SEQN', 'BMXWT', 'BMXHT', 'BMXBMI', 'BMXLEG', 'BMXARML')]) %>%
-  rename(weight=BMXWT, height=BMXHT, bmi=BMXBMI, leglength=BMXLEG, armlength=BMXARML) %>%
+  left_join(bmx[,c('SEQN', 'BMXWT', 'BMXHT', 'BMXBMI', 'BMXLEG', 'BMXARML', 'BMXHEAD', 'BMXARMC', 'BMXWAIST')]) %>%
+  rename(weight=BMXWT, height=BMXHT, bmi=BMXBMI, leglength=BMXLEG, armlength=BMXARML, headcircumference=BMXHEAD, armcircumference=BMXARMC, waist=BMXWAIST) %>%
   mutate(BMI_category = cut(bmi, breaks=c(0, 30, 85), right=F)) %>%
   left_join(msx) %>%
   rename(strength=MGDCGSZ) %>%
