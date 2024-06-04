@@ -1,6 +1,6 @@
 Package: nhanesGH
 Title: NHANES 2011-2014
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person(given = "Caroline",
            family = "Smith",

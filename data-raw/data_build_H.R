@@ -460,8 +460,16 @@ fastqx = read.xport('data-raw/NHANES data/FASTQX_H.XPT')
 # Serum testosterone (ng/dL): LBXTST
 # Relevant to upper body strength and
 # reported suppressive effect on depression
+# H series used a different testosterone assay
+# so to compare G and H values, need to transform
+# H values to match to G values with a regression eqn.
+# See https://wwwn.cdc.gov/Nchs/Nhanes/2013-2014/TST_H.htm
 
-tst = read.xport('data-raw/NHANES data/TST_H.XPT')
+tst =
+  read.xport('data-raw/NHANES data/TST_H.XPT') |>
+  mutate(
+    LBXTST = 0.979 * LBXTST - 0.178
+  )
 
 
 # Thyroid -----------------------------------------------------------------
@@ -1438,7 +1446,7 @@ d <- dem %>%
     ),
     edu = ifelse(!is.na(edu_child), edu_child, edu),
     partnered = maritalstatus == 1 | maritalstatus == 6,
-    partnered2 <- case_when(
+    partnered2 = case_when(
       maritalstatus == 2 |  maritalstatus == 3 |  maritalstatus == 4 |  maritalstatus == 5 ~ 0,
       maritalstatus == 6 ~ 1,
       maritalstatus == 1 ~ 2),

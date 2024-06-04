@@ -1487,7 +1487,7 @@ d <- dem %>%
     ),
     edu = ifelse(!is.na(edu_child), edu_child, edu),
     partnered = maritalstatus == 1 | maritalstatus == 6,
-    partnered2 <- case_when(
+    partnered2 = case_when(
       maritalstatus == 2 |  maritalstatus == 3 |  maritalstatus == 4 |  maritalstatus == 5 ~ 0,
       maritalstatus == 6 ~ 1,
       maritalstatus == 1 ~ 2),

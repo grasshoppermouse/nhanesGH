@@ -44,6 +44,16 @@ standardize_vars <- function(design){
       (testosterone - mean_test_sex$testosterone[1])/(2*sqrt(var_test_sex$testosterone[1]))
     ))
 
+  mean_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svymean, na.rm = T)
+  var_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svyvar, na.rm = T)
+  design = update(
+    design,
+    strength_sex_centered = ifelse(
+      sex == 'female',
+      (strength - mean_strength_sex$strength[2])/(2*sqrt(var_strength_sex$strength[2])),
+      (strength - mean_strength_sex$strength[1])/(2*sqrt(var_strength_sex$strength[1]))
+    ))
+
   mean_income = svymean(~income, design, na.rm=T)[[1]]
   sd_income = sqrt(svyvar(~income, design, na.rm=T)[[1]])
   design = update(design, income_centered = (income-mean_income)/(2*sd_income))

@@ -29,6 +29,16 @@ standardize_vars <- function(design){
   sd_strength = sqrt(svyvar(~strength, design, na.rm=T)[[1]])
   design = update(design, strength_centered = (strength-mean_strength)/(2*sd_strength))
 
+  mean_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svymean, na.rm = T)
+  var_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svyvar, na.rm = T)
+  design = update(
+    design,
+    strength_sex_centered = ifelse(
+      sex == 'female',
+      (strength - mean_strength_sex$strength[2])/(2*sqrt(var_strength_sex$strength[2])),
+      (strength - mean_strength_sex$strength[1])/(2*sqrt(var_strength_sex$strength[1]))
+    ))
+
   mean_testosterone = svymean(~testosterone, design, na.rm=T)[[1]]
   sd_testosterone = sqrt(svyvar(~testosterone, design, na.rm=T)[[1]])
   design = update(design, testosterone_centered = (testosterone-mean_testosterone)/(2*sd_testosterone))
@@ -187,6 +197,8 @@ all_designs <- function(d){
   d.design.adults <- standardize_vars(d.design.adults)
   d.design.adults.maximal <- standardize_vars(d.design.adults.maximal)
   d.design.dietary.adults <- standardize_vars(d.design.dietary.adults)
+  d.design.adult.female <- standardize_vars(d.design.adult.female)
+  d.design.adult.male <- standardize_vars(d.design.adult.male)
 
   return(list(
     'd.design' = d.design,
