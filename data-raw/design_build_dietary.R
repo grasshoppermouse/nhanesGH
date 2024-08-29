@@ -2,112 +2,78 @@ library(survey)
 
 # Center and Standardize --------------------------------------------------
 
+svy_standardize_var <- function(design, var, newvar){
+  mean_var <- svymean(make.formula(var), design, na.rm = T)[[1]]
+  sd_var <- sqrt(svyvar(make.formula(var), design, na.rm = T)[[1]])
+  design$variables[[newvar]] <- (design$variables[[var]] - mean_var)/(2*sd_var)
+  return(design)
+}
+
+svy_standardize_sex <- function(design, var, newvar){
+  mean_var_sex <- svyby(make.formula(var), by =~sex, design = design, FUN = svymean, na.rm = T)
+  mean_var_sex <- mean_var_sex[[var]]
+  sd_var_sex <- svyby(make.formula(var), by =~sex, design = design, FUN = svyvar, na.rm = T)
+  sd_var_sex <- sqrt(sd_var_sex[[var]])
+  design$variables[[newvar]] <- ifelse(
+    design$variables$sex == 'female',
+    (design$variables[[var]] - mean_var_sex[2])/(2*sd_var_sex[2]),
+    (design$variables[[var]] - mean_var_sex[1])/(2*sd_var_sex[1])
+  )
+  return(design)
+}
+
 standardize_vars <- function(design){
 
-  # Center and standardize variables for models with interactions
-  # Divide by 2SD, per Gelman 2008
+  design <- svy_standardize_var(design, 'age', 'age_centered')
+  design <- svy_standardize_var(design, 'weight', 'weight_centered')
+  design <- svy_standardize_var(design, 'height', 'height_centered')
+  design <- svy_standardize_var(design, 'bmi', 'bmi_centered')
+  design <- svy_standardize_var(design, 'strength', 'strength_centered')
+  design <- svy_standardize_sex(design, 'strength', 'strength_sex_centered')
 
-  mean_age = svymean(~age, design)[[1]]
-  sd_age = sqrt(svyvar(~age, design)[[1]])
-  design = update(design, age_centered = (age-mean_age)/(2*sd_age))
-  low_age = signif(mean_age - sd_age, 2) # -1 SD
-  high_age = signif(mean_age + sd_age, 2) # -1 SD
+  design <- svy_standardize_var(design, 'ArmLeanexclBMC', 'arm_lean_centered')
+  design <- svy_standardize_var(design, 'LegLeanexclBMC', 'leg_lean_centered')
+  design <- svy_standardize_var(design, 'TrunkLeanexclBMC', 'trunk_lean_centered')
+  design <- svy_standardize_var(design, 'TotalLeanexclBMC', 'total_lean_centered')
+  design <- svy_standardize_sex(design, 'ArmLeanexclBMC', 'arm_lean_sex_centered')
+  design <- svy_standardize_sex(design, 'LegLeanexclBMC', 'leg_lean_sex_centered')
+  design <- svy_standardize_sex(design, 'TrunkLeanexclBMC', 'trunk_lean_sex_centered')
+  design <- svy_standardize_sex(design, 'TotalLeanexclBMC', 'total_lean_sex_centered')
 
-  mean_weight = svymean(~weight, design, na.rm=T)[[1]]
-  sd_weight = sqrt(svyvar(~weight, design, na.rm=T)[[1]])
-  design = update(design, weight_centered = (weight-mean_weight)/(2*sd_weight))
+  design <- svy_standardize_var(design, 'ArmLeaninclBMC', 'arm_leanbmc_centered')
+  design <- svy_standardize_var(design, 'LegLeaninclBMC', 'leg_leanbmc_centered')
+  design <- svy_standardize_var(design, 'TrunkLeaninclBMC', 'trunk_leanbmc_centered')
+  design <- svy_standardize_var(design, 'TotalLeaninclBMC', 'total_leanbmc_centered')
+  design <- svy_standardize_sex(design, 'ArmLeaninclBMC', 'arm_leanbmc_sex_centered')
+  design <- svy_standardize_sex(design, 'LegLeaninclBMC', 'leg_leanbmc_sex_centered')
+  design <- svy_standardize_sex(design, 'TrunkLeaninclBMC', 'trunk_leanbmc_sex_centered')
+  design <- svy_standardize_sex(design, 'TotalLeaninclBMC', 'total_leanbmc_sex_centered')
 
-  mean_height = svymean(~height, design, na.rm=T)[[1]]
-  sd_height = sqrt(svyvar(~height, design, na.rm=T)[[1]])
-  design = update(design, height_centered = (height-mean_height)/(2*sd_height))
+  design <- svy_standardize_var(design, 'UpperLeanexclBMC', 'upper_lean_centered')
+  design <- svy_standardize_sex(design, 'UpperLeanexclBMC', 'upper_lean_sex_centered')
 
-  mean_bmi = svymean(~bmi, design, na.rm=T)[[1]]
-  sd_bmi = sqrt(svyvar(~bmi, design, na.rm=T)[[1]])
-  design = update(design, bmi_centered = (bmi-mean_bmi)/(2*sd_bmi))
+  design <- svy_standardize_var(design, 'UpperLeaninclBMC', 'upper_leanbmc_centered')
+  design <- svy_standardize_sex(design, 'UpperLeaninclBMC', 'upper_leanbmc_sex_centered')
 
-  mean_strength = svymean(~strength, design, na.rm=T)[[1]]
-  sd_strength = sqrt(svyvar(~strength, design, na.rm=T)[[1]])
-  design = update(design, strength_centered = (strength-mean_strength)/(2*sd_strength))
+  design <- svy_standardize_var(design, 'TotalLeanFat', 'total_leanfat_centered')
+  design <- svy_standardize_var(design, 'TotalPercentFat', 'total_percentfat_centered')
 
-  mean_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svymean, na.rm = T)
-  var_strength_sex <- svyby(~strength, by =~sex, design = design, FUN = svyvar, na.rm = T)
-  design = update(
-    design,
-    strength_sex_centered = ifelse(
-      sex == 'female',
-      (strength - mean_strength_sex$strength[2])/(2*sqrt(var_strength_sex$strength[2])),
-      (strength - mean_strength_sex$strength[1])/(2*sqrt(var_strength_sex$strength[1]))
-    ))
-
-  mean_testosterone = svymean(~testosterone, design, na.rm=T)[[1]]
-  sd_testosterone = sqrt(svyvar(~testosterone, design, na.rm=T)[[1]])
-  design = update(design, testosterone_centered = (testosterone-mean_testosterone)/(2*sd_testosterone))
-
-  mean_test_sex <- svyby(~testosterone, by =~sex, design = design, FUN = svymean, na.rm = T)
-  var_test_sex <- svyby(~testosterone, by =~sex, design = design, FUN = svyvar, na.rm = T)
-  design = update(
-    design,
-    testosterone_sex_centered = ifelse(
-      sex == 'female',
-      (testosterone - mean_test_sex$testosterone[2])/(2*sqrt(var_test_sex$testosterone[2])),
-      (testosterone - mean_test_sex$testosterone[1])/(2*sqrt(var_test_sex$testosterone[1]))
-    ))
-
-  mean_income = svymean(~income, design, na.rm=T)[[1]]
-  sd_income = sqrt(svyvar(~income, design, na.rm=T)[[1]])
-  design = update(design, income_centered = (income-mean_income)/(2*sd_income))
-
-  mean_edu = svymean(~edu, design, na.rm=T)[[1]]
-  sd_edu = sqrt(svyvar(~edu, design, na.rm=T)[[1]])
-  design = update(design, edu_centered = (edu-mean_edu)/(2*sd_edu))
-
-  mean_whitebloodcell = svymean(~whitebloodcell, design, na.rm=T)[[1]]
-  sd_whitebloodcell = sqrt(svyvar(~whitebloodcell, design, na.rm=T)[[1]])
-  design = update(design, whitebloodcell_centered = (whitebloodcell-mean_whitebloodcell)/(2*sd_whitebloodcell))
-
-  mean_redbloodcell = svymean(~redbloodcell, design, na.rm=T)[[1]]
-  sd_redbloodcell = sqrt(svyvar(~redbloodcell, design, na.rm=T)[[1]])
-  design = update(design, redbloodcell_centered = (redbloodcell-mean_redbloodcell)/(2*sd_redbloodcell))
-
-  mean_hemoglobin = svymean(~hemoglobin, design, na.rm=T)[[1]]
-  sd_hemoglobin = sqrt(svyvar(~hemoglobin, design, na.rm=T)[[1]])
-  design = update(design, hemoglobin_centered = (hemoglobin-mean_hemoglobin)/(2*sd_hemoglobin))
-
-  mean_disability_score = svymean(~disability_score, design, na.rm=T)[[1]]
-  sd_disability_score = sqrt(svyvar(~disability_score, design, na.rm=T)[[1]])
-  design = update(design, disability_score_centered = (disability_score-mean_disability_score)/(2*sd_disability_score))
-
-  mean_chronic_score <- svymean(~chronic_disease_score, design, na.rm=T)[[1]]
-  sd_chronic_score <- sqrt(svyvar(~chronic_disease_score, design, na.rm=T))[[1]]
-  design <- update(design, chronic_disease_score_centered = (chronic_disease_score - mean_chronic_score)/(2*sd_chronic_score))
-
-  mean_physical_count <- svymean(~physical_disease_count, design, na.rm=T)[[1]]
-  sd_physical_count <- sqrt(svyvar(~physical_disease_count, design, na.rm=T))[[1]]
-  design <- update(design, physical_disease_count_centered = (physical_disease_count - mean_physical_count)/(2*sd_physical_count))
-
-  mean_workMET <- svymean(~total_work_MET, design, na.rm=T)[[1]]
-  sd_workMET <- sqrt(svyvar(~total_work_MET, design, na.rm=T))[[1]]
-  design <- update(design, total_work_MET_centered = (total_work_MET - mean_workMET)/(2*sd_workMET))
-
-  mean_recMET <- svymean(~total_rec_MET, design, na.rm=T)[[1]]
-  sd_recMET <- sqrt(svyvar(~total_rec_MET, design, na.rm=T))[[1]]
-  design <- update(design, total_rec_MET_centered = (total_rec_MET - mean_recMET)/(2*sd_recMET))
-
-  mean_wobMET <- svymean(~wob_MET, design, na.rm=T)[[1]]
-  sd_wobMET <- sqrt(svyvar(~wob_MET, design, na.rm=T))[[1]]
-  design <- update(design, wob_MET_centered = (wob_MET - mean_wobMET)/(2*sd_wobMET))
-
-  mean_totMET <- svymean(~tot_MET, design, na.rm=T)[[1]]
-  sd_totMET <- sqrt(svyvar(~tot_MET, design, na.rm=T))[[1]]
-  design <- update(design, tot_MET_centered = (tot_MET - mean_totMET)/(2*sd_totMET))
-
-  mean_foodinsecurity_adult <- svymean(~foodinsecurity_adult, design, na.rm=T)[[1]]
-  sd_foodinsecurity_adult <- sqrt(svyvar(~foodinsecurity_adult, design, na.rm=T))[[1]]
-  design <- update(design, foodinsecurity_adult_centered = (foodinsecurity_adult - mean_foodinsecurity_adult)/(2*sd_foodinsecurity_adult))
-
-  mean_avgcalories <- svymean(~avgcalories, design, na.rm=T)[[1]]
-  sd_avgcalories <- sqrt(svyvar(~avgcalories, design, na.rm=T))[[1]]
-  design <- update(design, avgcalories_centered = (avgcalories - mean_avgcalories)/(2*sd_avgcalories))
+  design <- svy_standardize_var(design, 'testosterone', 'testosterone_centered')
+  design <- svy_standardize_sex(design, 'testosterone', 'testosterone_sex_centered')
+  design <- svy_standardize_var(design, 'income', 'income_centered')
+  design <- svy_standardize_var(design, 'edu', 'edu_centered')
+  design <- svy_standardize_var(design, 'whitebloodcell', 'whitebloodcell_centered')
+  design <- svy_standardize_var(design, 'redbloodcell', 'redbloodcell_centered')
+  design <- svy_standardize_var(design, 'hemoglobin', 'hemoglobin_centered')
+  design <- svy_standardize_var(design, 'disability_score', 'disability_score_centered')
+  design <- svy_standardize_var(design, 'chronic_disease_score', 'chronic_disease_score_centered')
+  design <- svy_standardize_var(design, 'physical_disease_count', 'physical_disease_count_centered')
+  design <- svy_standardize_var(design, 'total_work_MET', 'total_work_MET_centered')
+  design <- svy_standardize_var(design, 'total_rec_MET', 'total_rec_MET_centered')
+  design <- svy_standardize_var(design, 'wob_MET', 'wob_MET_centered')
+  design <- svy_standardize_var(design, 'tot_MET', 'tot_MET_centered')
+  design <- svy_standardize_var(design, 'foodinsecurity_adult', 'foodinsecurity_adult_centered')
+  design <- svy_standardize_var(design, 'avgcalories', 'avgcalories_centered')
 
   return(design)
 

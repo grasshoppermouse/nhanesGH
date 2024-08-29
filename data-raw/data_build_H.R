@@ -1400,7 +1400,51 @@ occ2 <-
 occ2$median_salary_max <- pmax(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
 occ2$median_salary_min <- pmin(occ2$median_salary_current, occ2$median_salary_long, na.rm = T)
 
+# Dual-Energy X-ray Absorptiometry - Whole Body ---------------------------
 
+dxx <- read_xpt('data-raw/NHANES data/DXX_H.XPT')
+
+dxx_labels <-
+  tibble(
+    name = names(dxx),
+    label = map_chr(dxx, \(x) attr(x, 'label'))
+  ) |>
+  mutate(
+    label2 = str_remove(label, " \\(.+$") |> str_remove_all(" |\\+")
+  )
+
+dxx_labels$label2[1] <- 'SEQN'
+names(dxx) <- dxx_labels$label2
+
+dxx <-
+  dxx |>
+  dplyr::select(
+    SEQN,
+    LeftArmLeanexclBMC,
+    RightArmLeanexclBMC,
+    LeftLegLeanexclBMC,
+    RightLegLeanexclBMC,
+    TrunkLeanexclBMC,
+    TotalLeanexclBMC,
+
+    LeftArmLeaninclBMC,
+    RightArmLeaninclBMC,
+    LeftLegLeaninclBMC,
+    RightLegLeaninclBMC,
+    TrunkLeaninclBMC,
+    TotalLeaninclBMC,
+
+    TotalLeanFat,
+    TotalPercentFat
+  ) |>
+  mutate(
+    ArmLeanexclBMC = LeftArmLeanexclBMC + RightArmLeanexclBMC,
+    LegLeanexclBMC = LeftLegLeanexclBMC + RightLegLeanexclBMC,
+    ArmLeaninclBMC = LeftArmLeaninclBMC + RightArmLeaninclBMC,
+    LegLeaninclBMC = LeftLegLeaninclBMC + RightLegLeaninclBMC,
+    UpperLeanexclBMC = ArmLeanexclBMC + TrunkLeanexclBMC,
+    UpperLeaninclBMC = ArmLeaninclBMC + TrunkLeaninclBMC
+  )
 
 # Create dataframe --------------------------------------------------------
 
@@ -1569,7 +1613,8 @@ d <- dem %>%
          d2protein = DR2TPROT) %>%
   left_join(rx_meds) %>%
   left_join(rx2) %>%
-  left_join(occ2)
+  left_join(occ2) |>
+  left_join(dxx)
 
 
 d$avgcalories <- (d$d1calories + d$d2calories)/2
